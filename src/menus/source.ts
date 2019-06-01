@@ -12,7 +12,7 @@ export default (): TelegrafInlineMenu => {
       try {
         await ctx.connection.manager.delete(Source, { id: sourceId });
       } catch (e) {
-        logger.error(e.stack, ctx);
+        logger.error(e.stack, { ctx });
         await ctx.reply(ctx.i18n.t('menus.source.deleteFailText'));
         return;
       }

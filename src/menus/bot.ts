@@ -45,7 +45,7 @@ export default (): TelegrafInlineMenu => {
           },
         );
       } catch (e) {
-        logger.error(e.stack, ctx);
+        logger.error(e.stack, { ctx });
         await ctx.reply(ctx.i18n.t('menus.bot.deleteFailText'));
         return;
       }

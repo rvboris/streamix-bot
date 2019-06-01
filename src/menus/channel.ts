@@ -12,7 +12,7 @@ export default (): TelegrafInlineMenu => {
         const [, , channelId = ''] = ctx.match;
         await ctx.connection.manager.delete(Channel, { id: channelId });
       } catch (e) {
-        logger.error(e.stack, ctx);
+        logger.error(e.stack, { ctx });
         await ctx.reply(ctx.i18n.t('menus.channel.deleteFailText'));
         return;
       }

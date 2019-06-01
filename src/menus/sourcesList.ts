@@ -66,7 +66,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
         try {
           await new Parser().parseURL(firstSource);
         } catch (e) {
-          logger.error(e.stack, ctx);
+          logger.error(e.stack, { ctx });
           await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceRecords', { url: firstSource }), {
             disable_web_page_preview: true,
           } as any);
@@ -84,7 +84,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
         await ctx.connection.manager.save(newSource);
       } catch (e) {
-        logger.error(e.stack, ctx);
+        logger.error(e.stack, { ctx });
         await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssFailText'));
         return;
       }

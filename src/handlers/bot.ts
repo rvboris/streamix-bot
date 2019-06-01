@@ -3,7 +3,6 @@ import logger from '../util/logger';
 import { Bot, Settings } from '../entites';
 import { Middleware, ContextMessageUpdate } from 'telegraf';
 import { get } from 'lodash';
-import botMenu from '../menus/main';
 
 const BOT_FATHER_ID = '93372553';
 const BOT_REGEXP = /\d+:.{35}/;

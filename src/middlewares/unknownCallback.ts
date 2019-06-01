@@ -6,7 +6,7 @@ export const unknownCallback = (): Middleware<ContextMessageUpdate> => (
   next: Function,
 ): void => {
   if (ctx.callbackQuery && ctx.callbackQuery.data) {
-    logger.debug('another callbackQuery happened', ctx, ctx.callbackQuery.data);
+    logger.debug('another callbackQuery happened', { ctx });
   }
 
   return next && next(ctx);
