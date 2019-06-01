@@ -1,5 +1,6 @@
 import { SourceRecord } from './SourceRecord';
+import { Source } from '../entites';
 
 export interface Parser {
-  parse(url: string): Promise<SourceRecord[]>;
+  parse(source: Source): Promise<SourceRecord[]>;
 }

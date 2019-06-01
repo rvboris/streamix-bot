@@ -3,8 +3,6 @@ import { Bot } from './Bot';
 import { User } from './User';
 import { ParserFactory } from '../parsers/ParserFactory';
 import { SourceRecord } from '../parsers/SourceRecord';
-import { SenderFactory } from '../senders/SenderFactory';
-import { Message } from 'telegram-typings';
 
 export enum SourceType {
   RSS = 1,
@@ -39,10 +37,6 @@ export class Source {
   public checked: Date;
 
   public async parse(): Promise<SourceRecord[]> {
-    return ParserFactory.getParser(this.type).parse(this.url);
-  }
-
-  public async send(bot: Bot, records: SourceRecord[]): Promise<Message[]> {
-    return SenderFactory.getSender().send(bot, records);
+    return ParserFactory.getParser(this.type).parse(this);
   }
 }

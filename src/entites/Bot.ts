@@ -2,6 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ObjectType, OneToMan
 import { User } from './User';
 import { Source } from './Source';
 import { Channel } from './Channel';
+import { SourceRecord } from '../parsers/SourceRecord';
+import { SenderFactory } from '../senders/SenderFactory';
 
 @Entity()
 export class Bot {
@@ -26,4 +28,8 @@ export class Bot {
 
   @OneToMany((): ObjectType<Channel> => Channel, (channel): Bot => channel.bot)
   public channels: Channel[];
+
+  public async send(records: SourceRecord[]): Promise<void> {
+    return SenderFactory.getSender().send(this, records);
+  }
 }

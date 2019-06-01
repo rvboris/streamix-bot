@@ -1,18 +1,25 @@
-import { ContextMessageUpdate } from 'telegraf';
 import util from 'util';
-import winston, { format, Logger } from 'winston';
+import winston, { format } from 'winston';
 
 const { combine, timestamp, printf } = format;
 
-const prepareMessage = (msg: string, ctx?: ContextMessageUpdate, ...data: any[]): string => {
-  const formattedMessage = data.length ? util.format(msg, ...data) : msg;
+const logContext = format(
+  (info): any => {
+    const ctx = info.ctx;
 
-  if (ctx && ctx.from) {
-    return `[${ctx.from.id}/${ctx.from.username}]: ${formattedMessage}`;
-  }
+    const formattedMessage = (info.message = info.meta ? util.format(info.message, ...info.meta) : info.message);
 
-  return `: ${formattedMessage}`;
-};
+    if (info.isWorker) {
+      info.message = `[worker] ${formattedMessage}`;
+    }
+
+    if (ctx && ctx.from) {
+      info.message = `[${ctx.from.id}/${ctx.from.username}] ${formattedMessage}`;
+    }
+
+    return info;
+  },
+);
 
 const logFormat = printf(
   (info): string => {
@@ -20,25 +27,21 @@ const logFormat = printf(
   },
 );
 
+const currentLevel = process.env.NODE_ENV === 'production' ? 'error' : 'debug';
+
 const logger = winston.createLogger({
+  exitOnError: false,
   transports: [
     new winston.transports.Console({
-      level: process.env.NODE_ENV === 'production' ? 'error' : 'debug',
+      level: currentLevel,
+      handleExceptions: true,
     }),
-    new winston.transports.File({ filename: 'debug.log', level: 'debug' }),
   ],
-  format: combine(timestamp(), format.splat(), format.simple(), logFormat),
+  format: combine(timestamp(), format.splat(), format.simple(), logContext(), logFormat),
 });
 
 if (process.env.NODE_ENV !== 'production') {
-  logger.debug('Logging initialized at debug level');
+  logger.debug(`logging initialized at ${currentLevel} level`);
 }
 
-const loggerWithCtx = {
-  debug: (msg: string, ctx?: ContextMessageUpdate, ...data: any[]): Logger =>
-    logger.debug(prepareMessage(msg, ctx, ...data)),
-  error: (msg: string, ctx?: ContextMessageUpdate, ...data: any[]): Logger =>
-    logger.error(prepareMessage(msg, ctx, ...data)),
-};
-
-export default loggerWithCtx;
+export default logger;

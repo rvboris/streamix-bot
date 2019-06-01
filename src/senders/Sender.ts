@@ -1,31 +1,59 @@
 import getTelegram from '../util/getTelegram';
 import { SourceRecord } from '../parsers/SourceRecord';
-import { Message } from 'telegram-typings';
 import { Bot } from '../entites';
 
 export class Sender {
+  private _messageMaxLength = 4096;
+
   protected _formatRecords(records): string[] {
     return records.map((): string => '');
   }
 
-  protected _concatRecords(records: string[]): string {
-    return records.length ? records.join('\n\n') : '';
+  protected _smartConcat(records: string[]): string[] {
+    if (!records.length) {
+      return [];
+    }
+
+    const lineBreak = '\n\n';
+
+    let concatedRecord = '';
+
+    return records.reduce((concatedRecords, record, idx): string[] => {
+      const next = concatedRecord + record + lineBreak;
+      const isLast = idx === records.length - 1;
+
+      if (next.length > this._messageMaxLength) {
+        concatedRecords.push(concatedRecord);
+        concatedRecord = record + lineBreak;
+      } else {
+        concatedRecord = next;
+      }
+
+      if (isLast) {
+        concatedRecords.push(concatedRecord);
+      }
+
+      return concatedRecords;
+    }, []);
   }
 
-  public send(bot: Bot, records: SourceRecord[]): Promise<Message[]> {
+  public async send(bot: Bot, records: SourceRecord[]): Promise<void> {
     const formattedRecords = this._formatRecords(records);
-    const concatedRecords = this._concatRecords(formattedRecords);
+    const concatedRecords = this._smartConcat(formattedRecords);
 
     if (!concatedRecords.length) {
       return;
     }
 
-    return Promise.all(
-      bot.channels.map(
-        (channel): Promise<Message> => {
-          return getTelegram(bot.token).sendMessage(channel.telegramId, concatedRecords);
-        },
-      ),
-    );
+    const tlg = getTelegram(bot.token);
+
+    for (const channel of bot.channels) {
+      for (const record of concatedRecords) {
+        await tlg.sendMessage(channel.telegramId, record, {
+          parse_mode: 'Markdown',
+          disable_web_page_preview: true,
+        });
+      }
+    }
   }
 }
