@@ -6,7 +6,7 @@ import { Logger } from 'winston';
 import { MappedSourceRecords } from './MappedSourceRecords';
 import { SourceRecord } from '../parsers/SourceRecord';
 
-const DEFAULT_INTERVAL = 1800000;
+const DEFAULT_INTERVAL = 15 * 60 * 1000;
 const USERS_PER_QUERY = 10;
 
 export class Worker {
@@ -21,42 +21,45 @@ export class Worker {
     this._log = logger.child({ isWorker: true });
   }
 
-  public start(): Promise<void> {
-    return interval(async (iterationNumber, stop): Promise<void> => {
-      if (this._isStopped) {
-        return stop();
-      }
-
-      this._log.debug(`start iteration ${iterationNumber}`);
-
-      try {
-        const usersCount = await this._connection.manager.count(User);
-
-        this._log.debug(`total ${usersCount} users`);
-
-        for (let skip = 0; skip < usersCount; skip += this._usersPerQuery) {
-          this._log.debug('get next users group');
-
-          const users = await this._connection.manager.find(User, {
-            take: this._usersPerQuery,
-            skip,
-            loadEagerRelations: false,
-          });
-
-          for (const user of users) {
-            await this._processUser(user, iterationNumber);
-          }
-        }
-      } catch (e) {
-        this._log.error(e.stack);
-      }
-
-      this._log.debug(`iteration ${iterationNumber} is finished`);
-    }, this._intervalTime);
+  public async start(): Promise<void> {
+    await this._processInterval(0);
+    return interval(this._processInterval.bind(this), this._intervalTime);
   }
 
   public stop(): void {
     this._isStopped = true;
+  }
+
+  private async _processInterval(iterationNumber: number, stop?: Function): Promise<void> {
+    if (this._isStopped && stop) {
+      return stop();
+    }
+
+    this._log.debug(`start iteration ${iterationNumber}`);
+
+    try {
+      const usersCount = await this._connection.manager.count(User);
+
+      this._log.debug(`total ${usersCount} users`);
+
+      for (let skip = 0; skip < usersCount; skip += this._usersPerQuery) {
+        this._log.debug('get next users group');
+
+        const users = await this._connection.manager.find(User, {
+          take: this._usersPerQuery,
+          skip,
+          loadEagerRelations: false,
+        });
+
+        for (const user of users) {
+          await this._processUser(user, iterationNumber);
+        }
+      }
+    } catch (e) {
+      this._log.error(e.stack);
+    }
+
+    this._log.debug(`iteration ${iterationNumber} is finished`);
   }
 
   private async _processUser(user: User, iterationNumber: number): Promise<void> {

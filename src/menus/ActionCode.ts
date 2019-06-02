@@ -4,7 +4,7 @@ export enum ActionCode {
   MAIN_BOTS = 'mbts',
   MAIN_SOURCES = 'msrc',
   MAIN_ADD_CHANNEL = 'machl',
-  MAIN_ABOUT = 'mabt',
+  MAIN_HELP = 'mhlp',
   MAIN_CONTACT = 'mctc',
   SETTINGS_LANGUAGE = 'slng',
   LANGUAGE_SELECT = 'lsct',

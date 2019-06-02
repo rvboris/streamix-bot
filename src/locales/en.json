@@ -3,35 +3,35 @@
     "main": {
       "title": "Main menu",
       "settingsBtn": "⚙️ Settings",
-      "aboutBtn": "❓ About",
-      "aboutText": "Hey! First of all, thanks for activating me!\n\nHave you ever had a moments when you see a trailer of cool movie and give yourself a promise to watch it? Then it appears to be 2 or 3 months until the release of this movie and you simply forget about it..\n\nMy author was in such situation quite a lot of time. And that's exactly why he created me. My name is Eve and I help him to track any movies he wants - as soon as they're available on torrents, I'm sending him a message about it and he never forgets to watch them anymore. I can help you with it as well! Just go search for a movie and add it to your collection and I'll write you back once you can watch it! If you want to check my source code, you could do it right here: https://github.com/dmbaranov/evemovies-bot",
+      "helpBtn": "💬 Help",
+      "helpText": "Help will be here very soon...",
       "contactBtn": "✍️ Contact",
-      "contactQuestion": "🤔 Here you can leave a message for the Creator! Be wise though, try to express your minds fully and clearly within one message!",
+      "contactQuestion": "🤔 Here you can leave a message for the Author of this bot. Please try to try to express your minds fully within one message.",
       "contactFailText": "❌ Your message not sent. Use only text please.",
-      "contactSuccessText": "📬 Your message has been delivered!",
-      "botsBtn": "Manage your bots",
-      "sourcesBtn": "Manage your sources",
-      "addChannelBtn": "Add channel",
-      "howToAddChannel": "Forward message from channel where is your bot admin"
+      "contactSuccessText": "📬 Your message has been delivered, thank you!",
+      "botsBtn": "Manage bots",
+      "sourcesBtn": "Manage sources",
+      "howToAddChannelBtn": "❓How to add channel",
+      "howToAddChannelText": "To add channel forward any message from it to this chat.\n\nBot will added if one of your bots is admin where.\n\nSupports public and private channels."
     },
     "settings": {
       "title": "⚙️ Settings",
-      "changeLanguageBtn": "Change language",
-      "changeLanguageText": "Language has been changed!"
+      "changeLanguageBtn": "🌎 Change language",
+      "changeLanguageText": "✅ Language has been changed"
     },
     "bots": {
-      "title": "Bots manager",
+      "title": "Manage bots",
       "selectBtn": "${botName} (${sources})",
-      "addBtn": "Add bot",
-      "howToAdd": "Forward message with token from bot father",
-      "addFailText": "❌ Fail",
-      "addSuccessText": "OK ${botName}"
+      "howToAddBtn": "❓How to add bot",
+      "howToAddText": "To add bot forward message within bot token from @BotFather",
+      "addFailText": "❌ Error, bot not added",
+      "addSuccessText": "✅ Bot ${botName} is added, now you can add channels and sources"
     },
     "bot": {
       "title": "Manage bot",
-      "deleteBtn": "Delete bot",
-      "deleteSuccessText": "Bot deleted",
-      "deleteFailText": "Bot delete fail",
+      "deleteBtn": "🗑 Delete bot",
+      "deleteSuccessText": "✅ Bot deleted",
+      "deleteFailText": "❌ Error, bot not deleted",
       "channelsBtn": "Channels"
     },
     "sources": {
@@ -43,33 +43,33 @@
       "title": "Sources for ${botName} bot",
       "sourceSelectBtn": "${sourceName} (${sourceType})",
       "addRssBtn": "Add RSS",
-      "addRssQuestion": "RSS URL",
-      "addRssFailText": "❌ Fail",
-      "addRssSuccessText": "OK",
-      "invalidSourceName": "Invalid source name \"${sourceName}\", it must be beetwen 3-32 chars length",
-      "invalidSourceUrl": "Can't get source URL from your answer",
-      "invalidSourceRecords": "Can't parse records from your URL \"${url}\""
+      "addRssQuestion": "Enter name of new source and URL separated by space",
+      "addRssFailText": "❌ Error, source not added",
+      "addRssSuccessText": "✅ New source added",
+      "invalidSourceName": "❌ Invalid source name \"${sourceName}\", it must be beetwen 3-32 chars length",
+      "invalidSourceUrl": "❌ Can't get source URL from your answer",
+      "invalidSourceRecords": "❌ Can't parse records from your URL \"${url}\""
     },
     "source": {
       "title": "Manage source",
-      "deleteBtn": "Delete source",
-      "deleteSuccessText": "Source deleted",
-      "deleteFailText": "Source delete fail"
+      "deleteBtn": "🗑 Delete source",
+      "deleteSuccessText": "✅ Source deleted",
+      "deleteFailText": "❌ Error, source not deleted"
     },
     "channels": {
       "title": "View channels"
     },
     "channel": {
       "title": "Manage channel",
-      "deleteBtn": "Delete channel",
-      "addSuccessText": "OK ${channelName} ${botName}",
-      "addFailText": "Fail",
-      "deleteSuccessText": "Channel deleted",
-      "deleteFailText": "Channel delete fail"
+      "deleteBtn": "🗑 Delete channel",
+      "addSuccessText": "✅ Channel name ${channelName} added for ${botName} bot",
+      "addFailText": "❌ Error, channel not added",
+      "deleteSuccessText": "✅ Channel deleted",
+      "deleteFailText": "❌ Error, channel not deleted"
     }
   },
   "shared": {
-    "backBtn": "...Back",
+    "backBtn": "◀️ Back",
     "backToMainBtn": "Back to main menu"
   }
 }

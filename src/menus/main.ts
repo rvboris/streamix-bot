@@ -52,9 +52,9 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
     },
   });
 
-  menu.simpleButton((ctx): string => ctx.i18n.t('menus.main.addChannelBtn'), ActionCode.MAIN_ADD_CHANNEL, {
+  menu.simpleButton((ctx): string => ctx.i18n.t('menus.main.howToAddChannelBtn'), ActionCode.MAIN_ADD_CHANNEL, {
     doFunc: async (ctx): Promise<void> => {
-      await ctx.reply(ctx.i18n.t('menus.main.howToAddChannel'));
+      await ctx.reply(ctx.i18n.t('menus.main.howToAddChannelText'));
     },
     hide: async (ctx): Promise<boolean> => {
       const isAnyBots = await ctx.connection.manager.count(Bot, { user: ctx.user });
@@ -63,9 +63,9 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
     },
   });
 
-  menu.simpleButton((ctx): string => ctx.i18n.t('menus.main.aboutBtn'), ActionCode.MAIN_ABOUT, {
+  menu.simpleButton((ctx): string => ctx.i18n.t('menus.main.helpBtn'), ActionCode.MAIN_HELP, {
     doFunc: async (ctx): Promise<void> => {
-      await ctx.reply(ctx.i18n.t('menus.main.aboutText'), {
+      await ctx.reply(ctx.i18n.t('menus.main.helpText'), {
         disable_web_page_preview: true,
       } as any);
     },

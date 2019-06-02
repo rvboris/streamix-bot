@@ -22,9 +22,9 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
     columns: 1,
   });
 
-  menu.simpleButton((ctx): string => ctx.i18n.t('menus.bots.addBtn'), ActionCode.BOTS_ADD, {
+  menu.simpleButton((ctx): string => ctx.i18n.t('menus.bots.howToAddBtn'), ActionCode.BOTS_ADD, {
     doFunc: async (ctx): Promise<void> => {
-      await ctx.reply(ctx.i18n.t('menus.bots.howToAdd'));
+      await ctx.reply(ctx.i18n.t('menus.bots.howToAddText'));
     },
   });
 

@@ -6,9 +6,6 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "start": "node dist/bot.js",
-    "dev": "nodemon --exec ts-node src/bot.ts -P ./tsconfig.json --watch src",
-    "test": "jest --watch",
-    "coverage": "jest --coverage",
     "lint": "eslint src/*.ts"
   },
   "keywords": [
@@ -33,19 +30,14 @@
   },
   "devDependencies": {
     "@types/dotenv-safe": "^5.0.3",
-    "@types/jest": "^24.0.13",
     "@types/node": "^12.0.4",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "jest": "^24.8.0",
-    "nodemon": "^1.19.1",
     "prettier": "^1.17.1",
     "rimraf": "^2.6.3",
-    "ts-jest": "^24.0.2",
-    "ts-node": "^8.2.0",
     "typescript": "^3.5.1"
   }
 }
