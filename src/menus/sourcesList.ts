@@ -22,7 +22,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
     const settings = await ctx.connection.manager.findOne(Settings, { user: ctx.user });
     const userSources = await ctx.connection.manager.find(Source, { user: ctx.user, bot: settings.defaultBot });
 
-    return userSources.map((source): string => source.id.toString());
+    return userSources ? userSources.map((source): string => source.id.toString()) : [];
   };
 
   menu.selectSubmenu(ActionCode.SOURCES_LIST_SELECT, getSourcesNames, SourceMenu(), {

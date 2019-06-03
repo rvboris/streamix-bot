@@ -40,7 +40,7 @@
       "sourcesListBtn": "Посмотреть источники для бота ${botName}"
     },
     "sourcesList": {
-      "title": "Источники для ${botName}",
+      "title": "Источники бота",
       "sourceSelectBtn": "${sourceName} (${sourceType})",
       "addRssBtn": "Добавить RSS",
       "addRssQuestion": "Введите имя нового источника и его адрес через пробел",

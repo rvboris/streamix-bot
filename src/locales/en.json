@@ -40,7 +40,7 @@
       "sourcesListBtn": "View sources for ${botName} bot"
     },
     "sourcesList": {
-      "title": "Sources for ${botName} bot",
+      "title": "Sources of bot",
       "sourceSelectBtn": "${sourceName} (${sourceType})",
       "addRssBtn": "Add RSS",
       "addRssQuestion": "Enter name of new source and URL separated by space",
