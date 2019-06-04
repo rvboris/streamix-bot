@@ -27,7 +27,7 @@ const logFormat = printf(
   },
 );
 
-const currentLevel = process.env.NODE_ENV === 'production' ? 'error' : 'debug';
+const currentLevel = process.env.NODE_ENV === 'production' ? 'info' : 'debug';
 
 const logger = winston.createLogger({
   exitOnError: false,

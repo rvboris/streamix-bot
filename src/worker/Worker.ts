@@ -35,15 +35,15 @@ export class Worker {
       return stop();
     }
 
-    this._log.debug(`start iteration ${iterationNumber}`);
+    this._log.info(`start iteration ${iterationNumber}`);
 
     try {
       const usersCount = await this._connection.manager.count(User);
 
-      this._log.debug(`total ${usersCount} users`);
+      this._log.info(`total ${usersCount} users`);
 
       for (let skip = 0; skip < usersCount; skip += this._usersPerQuery) {
-        this._log.debug('get next users group');
+        this._log.info('get next users group');
 
         const users = await this._connection.manager.find(User, {
           take: this._usersPerQuery,
@@ -59,11 +59,11 @@ export class Worker {
       this._log.error(e.stack);
     }
 
-    this._log.debug(`iteration ${iterationNumber} is finished`);
+    this._log.info(`iteration ${iterationNumber} is finished`);
   }
 
   private async _processUser(user: User, iterationNumber: number): Promise<void> {
-    this._log.debug(`work on user ${user.id}`);
+    this._log.info(`work on user ${user.id}`);
 
     const sources = await this._connection
       .createQueryBuilder(Source, 'source')
@@ -72,15 +72,15 @@ export class Worker {
       .where('source.user = :user', { user: user.id })
       .getMany();
 
-    this._log.debug(`total of user sources is ${sources.length}`);
-    this._log.debug(`starting the check of user sources`);
+    this._log.info(`total of user sources is ${sources.length}`);
+    this._log.info(`starting the check of user sources`);
 
     const sourcesRecords = await this._processSources(sources);
 
-    this._log.debug(`check of user sources is finished`);
+    this._log.info(`check of user sources is finished`);
 
     if (!sourcesRecords.length) {
-      this._log.debug(`no new records, finish ${iterationNumber} iteration`);
+      this._log.info(`no new records, finish ${iterationNumber} iteration`);
       return;
     }
 
@@ -93,9 +93,9 @@ export class Worker {
 
   private async _sendRecords(groupedSources: MappedSourceRecords): Promise<void> {
     for (const [botId, { bot, records }] of groupedSources) {
-      this._log.debug(`start sending ${records.length} records by ${botId} bot`);
+      this._log.info(`start sending ${records.length} records by ${botId} bot`);
       await bot.send(records);
-      this._log.debug(`sending ${records.length} records by ${botId} bot is finished`);
+      this._log.info(`sending ${records.length} records by ${botId} bot is finished`);
     }
   }
 
@@ -106,7 +106,7 @@ export class Worker {
       },
     );
 
-    this._log.debug(`update sources check time`);
+    this._log.info(`update sources check time`);
 
     await this._connection
       .createQueryBuilder(Source, 'source')
@@ -138,19 +138,19 @@ export class Worker {
       const collection = await previousPromise;
 
       if (!source.bot.channels.length) {
-        this._log.debug(`bot ${source.bot.id} has no channels`);
+        this._log.info(`bot ${source.bot.id} has no channels`);
         return collection;
       }
 
-      this._log.debug(`starting parse of source ${source.id}`);
+      this._log.info(`starting parse of source ${source.id}`);
 
       const lastRecords = await source.parse();
 
-      this._log.debug(`parse of source ${source.id} is finished`);
+      this._log.info(`parse of source ${source.id} is finished`);
 
       const newRecords = lastRecords.filter((record): boolean => record.date > source.checked);
 
-      this._log.debug(`total of new records ${newRecords.length} of source ${source.id}`);
+      this._log.info(`total of new records ${newRecords.length} of source ${source.id}`);
 
       if (newRecords.length) {
         collection.push(...newRecords);
