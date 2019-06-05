@@ -10,9 +10,11 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
       return next && next();
     }
 
+    console.log(ctx.message);
+
     const { id: channelId, title: channelTitle, username: channelUsername } = get(ctx, 'message.forward_from_chat', {});
 
-    if (!channelId || !channelTitle || !channelUsername) {
+    if (!channelId || !channelTitle) {
       return next && next();
     }
 
@@ -41,7 +43,11 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
           const newChannel = new Channel();
 
           newChannel.telegramId = channelId.toString();
-          newChannel.username = channelUsername;
+
+          if (channelUsername) {
+            newChannel.username = channelUsername;
+          }
+
           newChannel.title = channelTitle;
           newChannel.bot = bot;
 

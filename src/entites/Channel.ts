@@ -9,7 +9,7 @@ export class Channel {
   @Column({ unique: true })
   public telegramId: string;
 
-  @Column()
+  @Column({ nullable: true })
   public username: string;
 
   @Column()
