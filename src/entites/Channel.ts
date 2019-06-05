@@ -10,7 +10,7 @@ export class Channel {
   public telegramId: string;
 
   @Column({ nullable: true })
-  public username: string;
+  public username?: string;
 
   @Column()
   public title: string;
