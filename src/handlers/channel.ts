@@ -10,8 +10,6 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
       return next && next();
     }
 
-    console.log(ctx.message);
-
     const { id: channelId, title: channelTitle, username: channelUsername } = get(ctx, 'message.forward_from_chat', {});
 
     if (!channelId || !channelTitle) {

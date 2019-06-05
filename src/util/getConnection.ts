@@ -11,6 +11,6 @@ export default async (): Promise<Connection> =>
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     entities: [User, Settings, Bot, Source, Channel],
-    synchronize: true,
+    synchronize: process.env.NODE_ENV !== 'production',
     logging: false,
   });
