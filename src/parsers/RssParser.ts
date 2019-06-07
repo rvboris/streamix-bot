@@ -3,7 +3,7 @@ import FeedParser, { Item } from 'feedparser';
 import { SourceRecord } from './SourceRecord';
 import { Parser } from './Parser';
 import { Source } from '../entites';
-import { Iconv } from 'iconv';
+import { decodeStream } from 'iconv-lite';
 
 export class RssParser implements Parser {
   public async try(url: string): Promise<void> {
@@ -86,8 +86,8 @@ export class RssParser implements Parser {
   private _fixCharset(res: request.Response, charset: string): request.Response {
     if (charset && !/utf-*8/i.test(charset)) {
       try {
-        const iconv = new Iconv(charset, 'utf-8');
-        res = res.pipe(iconv);
+        const iconv = decodeStream(charset);
+        res = res.pipe(iconv as any);
       } catch (err) {
         res.emit('error', err);
       }
