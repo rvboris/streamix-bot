@@ -1,12 +1,12 @@
 import TelegrafInlineMenu from 'telegraf-inline-menu';
 import SourceMenu from './source';
 import getUrls from 'get-urls';
-import Parser from 'rss-parser';
 import logger from '../util/logger';
 import { ContextMessageUpdate } from 'telegraf';
 import { ActionCode } from './ActionCode';
 import { Source, Settings } from '../entites';
 import { SourceType } from '../entites/Source';
+import { RssParser } from '../parsers/RssParser';
 
 export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   const getMenuTitle = async (ctx: ContextMessageUpdate): Promise<string> => {
@@ -64,7 +64,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
         }
 
         try {
-          await new Parser().parseURL(firstSource);
+          await new RssParser().try(firstSource);
         } catch (e) {
           logger.error(e.stack, { ctx });
           await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceRecords', { url: firstSource }), {

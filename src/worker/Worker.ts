@@ -52,7 +52,7 @@ export class Worker {
         });
 
         for (const user of users) {
-          await this._processUser(user, iterationNumber);
+          await this._processUser(user);
         }
       }
     } catch (e) {
@@ -62,7 +62,12 @@ export class Worker {
     this._log.info(`iteration ${iterationNumber} is finished`);
   }
 
-  private async _processUser(user: User, iterationNumber: number): Promise<void> {
+  private async _processUser(user: User): Promise<void> {
+    if (process.env.NODE_ENV !== 'production' && user.telegramId !== process.env.ADMIN_ID) {
+      this._log.info(`skip non admin user in development mode`);
+      return;
+    }
+
     this._log.info(`work on user ${user.id}`);
 
     const sources = await this._connection
@@ -80,7 +85,7 @@ export class Worker {
     this._log.info(`check of user sources is finished`);
 
     if (!sourcesRecords.length) {
-      this._log.info(`no new records, finish ${iterationNumber} iteration`);
+      this._log.info(`no new records`);
       return;
     }
 

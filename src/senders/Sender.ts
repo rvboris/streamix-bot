@@ -4,6 +4,7 @@ import { Bot } from '../entites';
 
 export class Sender {
   private _messageMaxLength = 4096;
+  private _pauseBetweenMessages = 2;
 
   protected _formatRecords(records): string[] {
     return records.map((): string => '');
@@ -53,6 +54,8 @@ export class Sender {
           parse_mode: 'Markdown',
           disable_web_page_preview: true,
         });
+
+        await new Promise(resolve => setTimeout(resolve, this._pauseBetweenMessages * 1000));
       }
     }
   }

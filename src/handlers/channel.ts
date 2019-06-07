@@ -53,7 +53,7 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
 
           ctx.reply(
             ctx.i18n.t('menus.channel.addSuccessText', {
-              channelName: channelUsername,
+              channelName: channelTitle,
               botName: bot.username,
             }),
           );
