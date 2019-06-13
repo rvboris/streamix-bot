@@ -15,10 +15,12 @@ export class Worker {
   private _usersPerQuery = USERS_PER_QUERY;
   private _isStopped = false;
   private _connection: Connection;
+  private _proccesedCache: Map<string, SourceRecord[]>;
 
   public constructor(connection: Connection) {
     this._connection = connection;
     this._log = logger.child({ isWorker: true });
+    this._proccesedCache = new Map<string, SourceRecord[]>();
   }
 
   public async start(): Promise<void> {
@@ -36,6 +38,8 @@ export class Worker {
     }
 
     this._log.info(`start iteration ${iterationNumber}`);
+
+    this._proccesedCache.clear();
 
     try {
       const usersCount = await this._connection.manager.count(User);
@@ -63,11 +67,6 @@ export class Worker {
   }
 
   private async _processUser(user: User): Promise<void> {
-    if (process.env.NODE_ENV !== 'production' && user.telegramId !== process.env.ADMIN_ID) {
-      this._log.info(`skip non admin user in development mode`);
-      return;
-    }
-
     this._log.info(`work on user ${user.id}`);
 
     const sources = await this._connection
@@ -92,6 +91,11 @@ export class Worker {
     await this._updateSourcesCheckTime(sources);
 
     const groupedSources = this._groupSourcesByBot(sourcesRecords);
+
+    if (process.env.NODE_ENV !== 'production' && user.telegramId !== process.env.ADMIN_ID) {
+      this._log.info(`skip non admin user in development mode`);
+      return;
+    }
 
     await this._sendRecords(groupedSources);
   }
@@ -138,6 +142,11 @@ export class Worker {
     }, new Map<number, { bot: Bot; records: SourceRecord[] }>());
   }
 
+  private _getCacheKey({url}: Source): string {
+    const {host, pathname} = new URL(url);
+    return `${host}${pathname}`
+  }
+
   private async _processSources(sources: Source[]): Promise<SourceRecord[]> {
     return sources.reduce(async (previousPromise, source): Promise<SourceRecord[]> => {
       const collection = await previousPromise;
@@ -147,18 +156,33 @@ export class Worker {
         return collection;
       }
 
-      this._log.info(`starting parse of source ${source.id}`);
+      let lastRecords;
 
-      const lastRecords = await source.parse();
+      const cacheKey = this._getCacheKey(source);
+      const isSourceCached = this._proccesedCache.has(cacheKey);
 
-      this._log.info(`parse of source ${source.id} is finished`);
+      if (isSourceCached) {
+        lastRecords = this._proccesedCache.get(cacheKey);
 
-      const newRecords = lastRecords.filter((record): boolean => record.date > source.checked);
+        this._log.info(`get source from cache ${source.id}`);
+      } else {
+        this._log.info(`starting parse of source ${source.id}`);
+
+        lastRecords = await source.parse();
+
+        this._log.info(`parse of source ${source.id} is finished`);
+      }
+
+      const newRecords = lastRecords.filter((record): boolean => record.date != source.checked);
 
       this._log.info(`total of new records ${newRecords.length} of source ${source.id}`);
 
       if (newRecords.length) {
         collection.push(...newRecords);
+
+        if (!isSourceCached) {
+          this._proccesedCache.set(cacheKey, newRecords);
+        }
       }
 
       return collection;
