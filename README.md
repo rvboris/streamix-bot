@@ -1,4 +1,4 @@
-# Streamix Bot
+# [Streamix Bot](https://t.me/streamix_bot)
 
 It's Telegram bot which help you get information from various type of sources like RSS and group them into private or public channels.
 
