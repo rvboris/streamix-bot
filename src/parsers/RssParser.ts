@@ -11,13 +11,13 @@ export class RssParser implements Parser {
   }
 
   public async parse(source: Source): Promise<SourceRecord[]> {
-    const items = await this._parseSourceByUrl(source.url);
+    const items = await this._parseSourceByUrl(source.dataId);
 
     return items.map(
       (record): SourceRecord => {
         return {
           title: record.title,
-          url: record.link,
+          dataId: record.link,
           content: record.summary,
           date: new Date(record.date),
           source,

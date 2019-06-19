@@ -1,8 +1,17 @@
 import getTelegram from '../util/getTelegram';
 import logger from '../util/logger';
-import { Bot, Channel } from '../entites';
+import { Bot, Channel, Settings } from '../entites';
 import { Middleware, ContextMessageUpdate } from 'telegraf';
 import { get } from 'lodash';
+
+function mapAsync<T, U>(array: T[], callbackfn: (value: T, index: number, array: T[]) => Promise<U>): Promise<U[]> {
+  return Promise.all(array.map(callbackfn));
+}
+
+async function filterAsync<T>(array: T[], callbackfn: (value: T, index: number, array: T[]) => Promise<boolean>): Promise<T[]> {
+  const filterMap = await mapAsync(array, callbackfn);
+  return array.filter((value, index) => filterMap[index]);
+}
 
 export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx, next): Promise<void> => {
   try {
@@ -17,51 +26,51 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
     }
 
     const userBots = await ctx.connection.manager.find(Bot, { user: ctx.user });
+    const adminBots = await filterAsync<Bot>(userBots, async (bot) => {
+      try {
+        const chatMembers = await getTelegram(bot.token).getChatAdministrators(channelId);
+        const adminBot = chatMembers.find(
+          ({ user }): boolean => {
+            return user.is_bot && user.id.toString() === bot.telegramId;
+          },
+        );
 
-    await Promise.all(
-      userBots.map(
-        async (bot): Promise<Channel> => {
-          const chatMembers = await getTelegram(bot.token).getChatAdministrators(channelId);
-          const adminBot = chatMembers.find(
-            ({ user }): boolean => {
-              return user.is_bot && user.id.toString() === bot.telegramId;
-            },
-          );
+        return !!adminBot;
+      } catch (e) {
+        return false;
+      }
+    });
 
-          if (!adminBot) {
-            return;
-          }
+    if (!adminBots) {
+      return;
+    }
 
-          const channel = await ctx.connection.manager.findOne(Channel, { telegramId: channelId.toString() });
+    const channel = await ctx.connection.manager.findOne(Channel, { telegramId: channelId.toString() });
 
-          if (channel) {
-            return;
-          }
+    if (channel) {
+      return;
+    }
 
-          const newChannel = new Channel();
+    await ctx.connection.manager.transaction(
+      async (transactionalEntityManager): Promise<void> => {
+        const newChannel = new Channel();
 
-          newChannel.telegramId = channelId.toString();
+        newChannel.telegramId = channelId.toString();
 
-          if (channelUsername) {
-            newChannel.username = channelUsername;
-          }
+        if (channelUsername) {
+          newChannel.username = channelUsername;
+        }
 
-          newChannel.title = channelTitle;
-          newChannel.bot = bot;
+        newChannel.title = channelTitle;
+        newChannel.bots = adminBots;
+        newChannel.user = ctx.user;
 
-          await ctx.connection.manager.save(newChannel);
-
-          ctx.reply(
-            ctx.i18n.t('menus.channel.addSuccessText', {
-              channelName: channelTitle,
-              botName: bot.username,
-            }),
-          );
-
-          return newChannel;
-        },
-      ),
+        await transactionalEntityManager.save(newChannel);
+        await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultChannel: newChannel });
+      },
     );
+
+    ctx.reply(ctx.i18n.t('menus.channel.addSuccessText', { channelName: channelTitle }));
   } catch (e) {
     ctx.i18n.t('menus.channel.addFailText');
     logger.error(e.stack);

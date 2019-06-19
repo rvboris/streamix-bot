@@ -1,6 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ObjectType, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ObjectType, OneToMany, JoinColumn, ManyToMany } from 'typeorm';
 import { User } from './User';
-import { Source } from './Source';
 import { Channel } from './Channel';
 import { SourceRecord } from '../parsers/SourceRecord';
 import { SenderFactory } from '../senders/SenderFactory';
@@ -23,13 +22,10 @@ export class Bot {
   @JoinColumn()
   public user: User;
 
-  @OneToMany((): ObjectType<Source> => Source, (source): Bot => source.bot)
-  public sources: Source[];
-
-  @OneToMany((): ObjectType<Channel> => Channel, (channel): Bot => channel.bot)
+  @ManyToMany((): ObjectType<Channel> => Channel, (channel): Bot[] => channel.bots)
   public channels: Channel[];
 
-  public async send(records: SourceRecord[]): Promise<void> {
-    return SenderFactory.getSender().send(this, records);
+  public async send(channel: Channel, records: SourceRecord[]): Promise<void> {
+    return SenderFactory.getSender().send(this, channel, records);
   }
 }

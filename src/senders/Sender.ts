@@ -1,10 +1,10 @@
 import getTelegram from '../util/getTelegram';
 import { SourceRecord } from '../parsers/SourceRecord';
-import { Bot } from '../entites';
+import { Bot, Channel } from '../entites';
 
 export class Sender {
   private _messageMaxLength = 4096;
-  private _pauseBetweenMessages = 2;
+  private _pauseBetweenMessages = 1;
 
   protected _formatRecords(records): string[] {
     return records.map((): string => '');
@@ -38,7 +38,7 @@ export class Sender {
     }, []);
   }
 
-  public async send(bot: Bot, records: SourceRecord[]): Promise<void> {
+  public async send(bot: Bot, channel: Channel, records: SourceRecord[]): Promise<void> {
     const formattedRecords = this._formatRecords(records);
     const concatedRecords = this._smartConcat(formattedRecords);
 
@@ -48,15 +48,13 @@ export class Sender {
 
     const tlg = getTelegram(bot.token);
 
-    for (const channel of bot.channels) {
-      for (const record of concatedRecords) {
-        await tlg.sendMessage(channel.telegramId, record, {
-          parse_mode: 'Markdown',
-          disable_web_page_preview: true,
-        });
+    for (const record of concatedRecords) {
+      await tlg.sendMessage(channel.telegramId, record, {
+        parse_mode: 'Markdown',
+        disable_web_page_preview: true,
+      });
 
-        await new Promise(resolve => setTimeout(resolve, this._pauseBetweenMessages * 1000));
-      }
+      await new Promise(resolve => setTimeout(resolve, this._pauseBetweenMessages * 1000));
     }
   }
 }

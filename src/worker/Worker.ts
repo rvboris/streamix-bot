@@ -1,7 +1,7 @@
 import interval from 'interval-promise';
 import logger from '../util/logger';
 import { Connection } from 'typeorm';
-import { User, Source, Bot } from '../entites';
+import { User, Source, Channel, SourceType } from '../entites';
 import { Logger } from 'winston';
 import { MappedSourceRecords } from './MappedSourceRecords';
 import { SourceRecord } from '../parsers/SourceRecord';
@@ -67,12 +67,12 @@ export class Worker {
   }
 
   private async _processUser(user: User): Promise<void> {
-    this._log.info(`work on user ${user.id}`);
+    this._log.info(`work on user ${user.username}#${user.id}`);
 
     const sources = await this._connection
       .createQueryBuilder(Source, 'source')
-      .leftJoinAndSelect('source.bot', 'bot')
-      .leftJoinAndSelect('bot.channels', 'channels')
+      .leftJoinAndSelect('source.channel', 'channel')
+      .leftJoinAndSelect('channel.bots', 'bots')
       .where('source.user = :user', { user: user.id })
       .getMany();
 
@@ -90,21 +90,45 @@ export class Worker {
 
     await this._updateSourcesCheckTime(sources);
 
-    const groupedSources = this._groupSourcesByBot(sourcesRecords);
-
     if (process.env.NODE_ENV !== 'production' && user.telegramId !== process.env.ADMIN_ID) {
       this._log.info(`skip non admin user in development mode`);
       return;
     }
 
+    const groupedSources = this._groupSourcesByChannel(sourcesRecords);
+
     await this._sendRecords(groupedSources);
   }
 
-  private async _sendRecords(groupedSources: MappedSourceRecords): Promise<void> {
-    for (const [botId, { bot, records }] of groupedSources) {
-      this._log.info(`start sending ${records.length} records by ${botId} bot`);
-      await bot.send(records);
-      this._log.info(`sending ${records.length} records by ${botId} bot is finished`);
+  private _groupSourcesByChannel(sourcesRecords: SourceRecord[]): MappedSourceRecords {
+    const sortedRecords = sourcesRecords.sort(
+      (a, b): number => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+    return sortedRecords.reduce((groupedRecords: MappedSourceRecords, record: SourceRecord): MappedSourceRecords => {
+      const channel = record.source.channel;
+
+      if (!groupedRecords.get(channel.id)) {
+        groupedRecords.set(channel.id, { channel, records: [record] });
+      } else {
+        const item = groupedRecords.get(channel.id);
+        item.records = [...item.records, record];
+        groupedRecords.set(channel.id, item);
+      }
+
+      return groupedRecords;
+    }, new Map<number, { channel: Channel; records: SourceRecord[] }>());
+  }
+
+  private _sendRecords(groupedRecords: MappedSourceRecords): void {
+    for (const [, { channel, records }] of groupedRecords) {
+      const bots = channel.bots;
+      const useBot = bots[Math.floor(Math.random() * bots.length)];
+
+      this._log.info(`start sending ${records.length} records by ${useBot.username}#${useBot.id} bot`);
+
+      useBot.send(channel, records).then(() => {
+        this._log.info(`sending ${records.length} records by ${useBot.username}#${useBot.id} bot is finished`);
+      });
     }
   }
 
@@ -125,36 +149,18 @@ export class Worker {
       .execute();
   }
 
-  private _groupSourcesByBot(sourcesRecords: SourceRecord[]): MappedSourceRecords {
-    const sortedRecords = sourcesRecords.sort(
-      (a, b): number => new Date(a.date).getTime() - new Date(b.date).getTime(),
-    );
-    return sortedRecords.reduce((groupedRecords: MappedSourceRecords, record: SourceRecord): MappedSourceRecords => {
-      if (!groupedRecords.get(record.source.bot.id)) {
-        groupedRecords.set(record.source.bot.id, { bot: record.source.bot, records: [record] });
-      } else {
-        const item = groupedRecords.get(record.source.bot.id);
-        item.records = [...item.records, record];
-        groupedRecords.set(record.source.bot.id, item);
-      }
+  private _getCacheKey({dataId, type}: Source): string {
+    if (type === SourceType.RSS) {
+      const {host, pathname} = new URL(dataId);
+      return `${host}${pathname}`;
+    }
 
-      return groupedRecords;
-    }, new Map<number, { bot: Bot; records: SourceRecord[] }>());
-  }
-
-  private _getCacheKey({url}: Source): string {
-    const {host, pathname} = new URL(url);
-    return `${host}${pathname}`
+    return dataId;
   }
 
   private async _processSources(sources: Source[]): Promise<SourceRecord[]> {
     return sources.reduce(async (previousPromise, source): Promise<SourceRecord[]> => {
       const collection = await previousPromise;
-
-      if (!source.bot.channels.length) {
-        this._log.info(`bot ${source.bot.id} has no channels`);
-        return collection;
-      }
 
       let lastRecords;
 
@@ -163,26 +169,26 @@ export class Worker {
 
       if (isSourceCached) {
         lastRecords = this._proccesedCache.get(cacheKey);
+        collection.push(...lastRecords);
 
-        this._log.info(`get source from cache ${source.id}`);
-      } else {
-        this._log.info(`starting parse of source ${source.id}`);
+        this._log.info(`get source from cache ${source.name}#${source.id}`);
 
-        lastRecords = await source.parse();
-
-        this._log.info(`parse of source ${source.id} is finished`);
+        return collection;
       }
 
-      const newRecords = lastRecords.filter((record): boolean => record.date > source.checked);
+      this._log.info(`starting parse of source ${source.name}#${source.id}`);
 
-      this._log.info(`total of new records ${newRecords.length} of source ${source.id}`);
+      lastRecords = await source.parse();
+
+      this._log.info(`parse of source ${source.name}#${source.id} is finished`);
+
+      const newRecords = lastRecords.filter((record): boolean => record.date != source.checked);
+
+      this._log.info(`total of new records ${newRecords.length} of source ${source.name}#${source.id}`);
 
       if (newRecords.length) {
         collection.push(...newRecords);
-
-        if (!isSourceCached) {
-          this._proccesedCache.set(cacheKey, newRecords);
-        }
+        this._proccesedCache.set(cacheKey, newRecords);
       }
 
       return collection;

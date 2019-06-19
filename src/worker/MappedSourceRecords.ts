@@ -1,4 +1,4 @@
 import { SourceRecord } from '../parsers/SourceRecord';
-import { Bot } from '../entites';
+import { Channel } from '../entites';
 
-export type MappedSourceRecords = Map<number, { bot: Bot; records: SourceRecord[] }>;
+export type MappedSourceRecords = Map<number, { channel: Channel; records: SourceRecord[] }>;

@@ -3,6 +3,7 @@ import { Bot } from './Bot';
 import { User } from './User';
 import { ParserFactory } from '../parsers/ParserFactory';
 import { SourceRecord } from '../parsers/SourceRecord';
+import { Channel } from './Channel';
 
 export enum SourceType {
   RSS = 1,
@@ -13,16 +14,8 @@ export class Source {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @ManyToOne((): ObjectType<Bot> => Bot, (bot): Source[] => bot.sources, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  public bot: Bot;
-
-  @ManyToOne((): ObjectType<User> => User, (user): Source[] => user.sources)
-  @JoinColumn()
-  public user: User;
-
   @Column()
-  public url: string;
+  public dataId: string;
 
   @Column()
   public name: string;
@@ -35,6 +28,14 @@ export class Source {
 
   @Column()
   public checked: Date;
+
+  @ManyToOne((): ObjectType<Channel> => Channel, (channel): Source[] => channel.sources, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  public channel: Channel;
+
+  @ManyToOne((): ObjectType<User> => User, (user): Source[] => user.sources)
+  @JoinColumn()
+  public user: User;
 
   public async parse(): Promise<SourceRecord[]> {
     return ParserFactory.getParser(this.type).parse(this);

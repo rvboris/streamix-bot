@@ -15,9 +15,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   menu.selectSubmenu(ActionCode.BOTS_SELECT, getBotsNames, botMenu(), {
     textFunc: async (ctx, key): Promise<string> => {
       const bot = await ctx.connection.manager.findOne(Bot, { id: parseInt(key, 10), user: ctx.user });
-      const sourcesCount = await ctx.connection.manager.count(Source, { user: ctx.user, bot });
-
-      return ctx.i18n.t('menus.bots.selectBtn', { botName: bot.username, sources: sourcesCount });
+      return ctx.i18n.t('menus.bots.selectBtn', { botName: bot.username });
     },
     columns: 1,
   });

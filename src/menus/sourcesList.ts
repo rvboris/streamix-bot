@@ -11,16 +11,16 @@ import { RssParser } from '../parsers/RssParser';
 export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   const getMenuTitle = async (ctx: ContextMessageUpdate): Promise<string> => {
     const settings = await ctx.connection.manager.findOne(Settings, { user: ctx.user });
-    const botName = settings.defaultBot.username;
+    const channelName = settings.defaultChannel.name;
 
-    return ctx.i18n.t('menus.sourcesList.title', { botName });
+    return ctx.i18n.t('menus.sourcesList.title', { channelName });
   };
 
   const menu = new TelegrafInlineMenu(getMenuTitle);
 
   const getSourcesNames = async (): Promise<string[]> => {
     const settings = await ctx.connection.manager.findOne(Settings, { user: ctx.user });
-    const userSources = await ctx.connection.manager.find(Source, { user: ctx.user, bot: settings.defaultBot });
+    const userSources = await ctx.connection.manager.find(Source, { user: ctx.user, channel: settings.defaultChannel });
 
     return userSources ? userSources.map((source): string => source.id.toString()) : [];
   };
@@ -77,9 +77,9 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
         newSource.name = sourceName;
         newSource.type = SourceType.RSS;
-        newSource.url = firstSource;
+        newSource.dataId = firstSource;
         newSource.user = ctx.user;
-        newSource.bot = ctx.user.settings.defaultBot;
+        newSource.channel = ctx.user.settings.defaultChannel;
         newSource.checked = new Date();
 
         await ctx.connection.manager.save(newSource);

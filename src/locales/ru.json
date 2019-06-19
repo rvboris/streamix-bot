@@ -21,7 +21,7 @@
     },
     "bots": {
       "title": "Управление ботами",
-      "selectBtn": "${botName} (${sources})",
+      "selectBtn": "${botName}",
       "howToAddBtn": "❓Как добавить бота",
       "howToAddText": "Чтобы добавить бота перешлите сообщение содержащее его токен от @BotFather",
       "addFailText": "❌ Ошибка, бот не добавлен",
@@ -36,11 +36,11 @@
     },
     "sources": {
       "title": "Управление каналами",
-      "botSelectBtn": "Работать над ${botName} (${sources})",
-      "sourcesListBtn": "Посмотреть источники для бота ${botName}"
+      "channelSelectBtn": "Работать над ${channelName} (${sources})",
+      "sourcesListBtn": "Посмотреть источники для канала ${channelName}"
     },
     "sourcesList": {
-      "title": "Источники бота",
+      "title": "Источники ${channelName}",
       "sourceSelectBtn": "${sourceName} (${sourceType})",
       "addRssBtn": "Добавить RSS",
       "addRssQuestion": "Введите имя нового источника и его адрес через пробел",
@@ -62,7 +62,7 @@
     "channel": {
       "title": "Управление каналами",
       "deleteBtn": "✅ Удалить канал",
-      "addSuccessText": "Канал ${channelName} добавлен для бота ${botName}",
+      "addSuccessText": "Канал ${channelName} добавлен",
       "addFailText": "❌ Ошибка, канал не добавлен",
       "deleteSuccessText": "✅ Канал удален",
       "deleteFailText": "❌ Ошибка, канал не удален"

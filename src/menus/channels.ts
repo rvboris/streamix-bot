@@ -16,8 +16,8 @@ export default (): TelegrafInlineMenu => {
 
     const channels = await ctx.connection
       .createQueryBuilder(Channel, 'channel')
-      .leftJoinAndSelect('channel.bot', 'bot')
-      .where('bot.id = :botId', { botId })
+      .leftJoinAndSelect('channel.bots', 'bot')
+      .where('bot.id = ANY(:botId)', { botId: [parseInt(botId, 10)] })
       .getMany();
 
     return channels.map((channel): string => channel.id.toString());
@@ -25,8 +25,8 @@ export default (): TelegrafInlineMenu => {
 
   menu.selectSubmenu(ActionCode.CHANNELS_SELECT, getChannelsNames, channelMenu(), {
     textFunc: async (ctx, key): Promise<string> => {
-      const { title } = await ctx.connection.manager.findOne(Channel, { id: parseInt(key, 10) });
-      return title;
+      const { name } = await ctx.connection.manager.findOne(Channel, { id: parseInt(key, 10) });
+      return name;
     },
     columns: 1,
   });

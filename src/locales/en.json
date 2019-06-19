@@ -21,7 +21,7 @@
     },
     "bots": {
       "title": "Manage bots",
-      "selectBtn": "${botName} (${sources})",
+      "selectBtn": "${botName}",
       "howToAddBtn": "❓How to add bot",
       "howToAddText": "To add bot forward message within bot token from @BotFather",
       "addFailText": "❌ Error, bot not added",
@@ -36,11 +36,11 @@
     },
     "sources": {
       "title": "Sources manager",
-      "botSelectBtn": "Working on ${botName} bot (${sources})",
-      "sourcesListBtn": "View sources for ${botName} bot"
+      "channelSelectBtn": "Working on ${channelName} channel (${sources})",
+      "sourcesListBtn": "View sources of ${channelName} channel"
     },
     "sourcesList": {
-      "title": "Sources of bot",
+      "title": "Sources of ${channelName}",
       "sourceSelectBtn": "${sourceName} (${sourceType})",
       "addRssBtn": "Add RSS",
       "addRssQuestion": "Enter name of new source and URL separated by space",
@@ -62,7 +62,7 @@
     "channel": {
       "title": "Manage channel",
       "deleteBtn": "🗑 Delete channel",
-      "addSuccessText": "✅ Channel name ${channelName} added for ${botName} bot",
+      "addSuccessText": "✅ Channel name ${channelName} added",
       "addFailText": "❌ Error, channel not added",
       "deleteSuccessText": "✅ Channel deleted",
       "deleteFailText": "❌ Error, channel not deleted"

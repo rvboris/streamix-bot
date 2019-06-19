@@ -12,6 +12,7 @@ import {
 import { Settings } from './Settings';
 import { Bot } from './Bot';
 import { Source } from './Source';
+import { Channel } from './Channel';
 
 export enum UserStatus {
   STARTED = 1,
@@ -48,4 +49,7 @@ export class User {
 
   @OneToMany((): ObjectType<Source> => Source, (source): User => source.user, { onDelete: 'CASCADE' })
   public sources: Source[];
+
+  @OneToMany((): ObjectType<Channel> => Channel, (channel): User => channel.user, { onDelete: 'CASCADE' })
+  public channels: Channel[];
 }

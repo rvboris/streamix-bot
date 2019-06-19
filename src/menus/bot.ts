@@ -16,8 +16,8 @@ export default (): TelegrafInlineMenu => {
       const [, botId = ''] = ctx.match;
       const isAnyChannels = await ctx.connection
         .createQueryBuilder(Channel, 'channel')
-        .leftJoinAndSelect('channel.bot', 'bot')
-        .where('bot.id = :botId', { botId })
+        .leftJoinAndSelect('channel.bots', 'bot')
+        .where('bot.id = ANY(:botId)', { botId: [parseInt(botId, 10)] })
         .getCount();
 
       return !isAnyChannels;

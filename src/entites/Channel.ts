@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, JoinColumn, ObjectType, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, JoinColumn, ObjectType, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Bot } from './Bot';
+import { Source } from './Source';
+import { User } from './User';
 
 @Entity()
 export class Channel {
@@ -19,7 +21,18 @@ export class Channel {
   @CreateDateColumn()
   public created: Date;
 
-  @ManyToOne((): ObjectType<Bot> => Bot, (bot): Channel[] => bot.channels, { onDelete: 'CASCADE' })
+  @ManyToOne((): ObjectType<User> => User, (user): Channel[] => user.channels)
   @JoinColumn()
-  public bot: Bot;
+  public user: User;
+
+  @ManyToMany((): ObjectType<Bot> => Bot, (bot): Channel[] => bot.channels, { onDelete: 'CASCADE' })
+  @JoinTable()
+  public bots: Bot[];
+
+  @OneToMany((): ObjectType<Source> => Source, (source): Channel => source.channel)
+  public sources: Source[];
+
+  public get name(): string {
+    return this.username || this.title;
+  }
 }

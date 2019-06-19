@@ -12,7 +12,7 @@ export enum ActionCode {
   BOTS_SELECT = 'bsct',
   BOT_DELETE = 'bdel',
   BOT_CHANNELS = 'bchnl',
-  SOURCES_BOT_SELECT = 'sbsct',
+  SOURCES_CHANNEL_SELECT = 'scsct',
   SOURCES_LIST = 'slst',
   SOURCES_LIST_ADD_RSS = 'sars',
   SOURCES_LIST_SELECT = 'ssct',
