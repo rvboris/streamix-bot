@@ -182,7 +182,7 @@ export class Worker {
 
       this._log.info(`parse of source ${source.name}#${source.id} is finished`);
 
-      const newRecords = lastRecords.filter((record): boolean => record.date != source.checked);
+      const newRecords = lastRecords.filter((record): boolean => record.date > source.checked);
 
       this._log.info(`total of new records ${newRecords.length} of source ${source.name}#${source.id}`);
 
