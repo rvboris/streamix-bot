@@ -31,17 +31,23 @@ export default (): TelegrafInlineMenu => {
 
         ctx.connection.manager.transaction(
           async (transactionalEntityManager): Promise<void> => {
-            if (ctx.user.settings.defaultBot.id.toString() === botId) {
-              await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultBot: null });
+            const botToDelete = await transactionalEntityManager.findOne(Bot, { user:ctx.user, id: parseInt(botId, 10) }, { relations: ['channels'] });
+
+            await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultBot: null, defaultChannel: null });
+            await transactionalEntityManager.delete(Bot, botToDelete);
+
+            for (const channel of botToDelete.channels) {
+              const { bots } = await transactionalEntityManager.findOne(Channel, { user:ctx.user, id: channel.id }, { relations: ['bots'] });
+
+              if (!bots.length) {
+                await transactionalEntityManager.delete(Channel, { id: channel.id, user: ctx.user });
+              }
             }
 
-            await transactionalEntityManager.delete(Bot, { id: botId });
+            const bot = await transactionalEntityManager.findOne(Bot, { user: ctx.user }) || null;
+            const channel = await transactionalEntityManager.findOne(Channel, { user: ctx.user }) || null;
 
-            const bots = await transactionalEntityManager.find(Bot, { user: ctx.user });
-
-            if (bots) {
-              await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultBot: bots[0] });
-            }
+            await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultBot: bot, defaultChannel: channel });
           },
         );
       } catch (e) {

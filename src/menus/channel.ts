@@ -1,6 +1,6 @@
 import TelegrafInlineMenu from 'telegraf-inline-menu';
 import { ActionCode } from './ActionCode';
-import { Channel } from '../entites';
+import { Channel, Settings } from '../entites';
 import logger from '../util/logger';
 
 export default (): TelegrafInlineMenu => {
@@ -10,7 +10,22 @@ export default (): TelegrafInlineMenu => {
     doFunc: async (ctx): Promise<void> => {
       try {
         const [, , channelId = ''] = ctx.match;
-        await ctx.connection.manager.delete(Channel, { id: channelId });
+
+        ctx.connection.manager.transaction(
+          async (transactionalEntityManager): Promise<void> => {
+            if (ctx.user.settings.defaultChannel.id.toString() === channelId) {
+              await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultChannel: null });
+            }
+
+            await transactionalEntityManager.delete(Channel, { id: channelId });
+
+            const channels = await transactionalEntityManager.find(Channel, { user: ctx.user });
+
+            if (channels) {
+              await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultChannel: channels[0] });
+            }
+          },
+        );
       } catch (e) {
         logger.error(e.stack, { ctx });
         await ctx.reply(ctx.i18n.t('menus.channel.deleteFailText'));

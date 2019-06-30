@@ -3,15 +3,7 @@ import logger from '../util/logger';
 import { Bot, Channel, Settings } from '../entites';
 import { Middleware, ContextMessageUpdate } from 'telegraf';
 import { get } from 'lodash';
-
-function mapAsync<T, U>(array: T[], callbackfn: (value: T, index: number, array: T[]) => Promise<U>): Promise<U[]> {
-  return Promise.all(array.map(callbackfn));
-}
-
-async function filterAsync<T>(array: T[], callbackfn: (value: T, index: number, array: T[]) => Promise<boolean>): Promise<T[]> {
-  const filterMap = await mapAsync(array, callbackfn);
-  return array.filter((value, index) => filterMap[index]);
-}
+import { filterAsync } from '../util/filterAsync';
 
 export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx, next): Promise<void> => {
   try {
@@ -26,6 +18,11 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
     }
 
     const userBots = await ctx.connection.manager.find(Bot, { user: ctx.user });
+
+    if (!userBots.length) {
+      return;
+    }
+
     const adminBots = await filterAsync<Bot>(userBots, async (bot) => {
       try {
         const chatMembers = await getTelegram(bot.token).getChatAdministrators(channelId);
@@ -41,7 +38,7 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
       }
     });
 
-    if (!adminBots) {
+    if (!adminBots.length) {
       return;
     }
 

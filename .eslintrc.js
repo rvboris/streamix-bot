@@ -10,7 +10,7 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
-    "@typescript-eslint/no-explicit-any": false,
-    "@typescript-eslint/camelcase": false
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/camelcase": 0
   }
 };

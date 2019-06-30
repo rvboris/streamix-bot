@@ -25,7 +25,7 @@ export class Channel {
   @JoinColumn()
   public user: User;
 
-  @ManyToMany((): ObjectType<Bot> => Bot, (bot): Channel[] => bot.channels, { onDelete: 'CASCADE' })
+  @ManyToMany((): ObjectType<Bot> => Bot, (bot): Channel[] => bot.channels)
   @JoinTable()
   public bots: Bot[];
 
