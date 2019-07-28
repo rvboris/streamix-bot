@@ -1,6 +1,6 @@
 {
   "name": "streamix",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "streamix bot",
   "main": "index.js",
   "scripts": {
