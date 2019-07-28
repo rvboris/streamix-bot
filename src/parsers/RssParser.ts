@@ -29,11 +29,9 @@ export class RssParser implements Parser {
   private _getCharset(httpResponse): Record<string, any> {
     const contentType = httpResponse.headers['content-type'] || '';
     const params = contentType.split(';').reduce((params, param): any => {
-      const parts = param.split('=').map(
-        (part: string): string => {
-          return part.trim();
-        },
-      );
+      const parts = param.split('=').map((part: string): string => {
+        return part.trim();
+      });
 
       if (parts.length === 2) {
         params[parts[0]] = parts[1];
@@ -46,41 +44,39 @@ export class RssParser implements Parser {
   }
 
   private _parseSourceByUrl(url: string): Promise<Item[]> {
-    return new Promise(
-      (resolve, reject): void => {
-        const req = request(url);
-        const getCharset = this._getCharset;
-        const maybeConvert = this._fixCharset;
-        const checkForNoneLengthEnclosures = this._checkForNoneLengthEnclosures;
-        const feedparser = new FeedParser({});
-        const items = [];
+    return new Promise((resolve, reject): void => {
+      const req = request(url);
+      const getCharset = this._getCharset;
+      const maybeConvert = this._fixCharset;
+      const checkForNoneLengthEnclosures = this._checkForNoneLengthEnclosures;
+      const feedparser = new FeedParser({});
+      const items = [];
 
-        feedparser.on('readable', function(): void {
-          const stream = this;
+      feedparser.on('readable', function(): void {
+        const stream = this;
 
-          let item: Item;
+        let item: Item;
 
-          while ((item = stream.read())) {
-            items.push(checkForNoneLengthEnclosures(item));
-          }
+        while ((item = stream.read())) {
+          items.push(checkForNoneLengthEnclosures(item));
+        }
 
-          resolve(items);
-        });
+        resolve(items);
+      });
 
-        req.on('response', function(res): void {
-          const charset = getCharset(res).charset;
+      req.on('response', function(res): void {
+        const charset = getCharset(res).charset;
 
-          if (res.statusCode !== 200) {
-            this.emit('error', new Error('Bad status code'));
-          } else {
-            res = maybeConvert(res, charset);
-            res.pipe(feedparser);
-          }
-        });
+        if (res.statusCode !== 200) {
+          this.emit('error', new Error('Bad status code'));
+        } else {
+          res = maybeConvert(res, charset);
+          res.pipe(feedparser);
+        }
+      });
 
-        req.on('error', reject);
-      },
-    );
+      req.on('error', reject);
+    });
   }
 
   private _fixCharset(res: request.Response, charset: string): request.Response {
@@ -98,7 +94,7 @@ export class RssParser implements Parser {
 
   private _checkForNoneLengthEnclosures(item): Item {
     if (item.enclosures) {
-      item.enclosures = item.enclosures.map((enc: any):any => {
+      item.enclosures = item.enclosures.map((enc: any): any => {
         if (enc.length === 'None') {
           enc.length = 0;
         }

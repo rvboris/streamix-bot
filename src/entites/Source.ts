@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ObjectType, CreateDateColumn } from 'typeorm';
-import { Bot } from './Bot';
 import { User } from './User';
 import { ParserFactory } from '../parsers/ParserFactory';
 import { SourceRecord } from '../parsers/SourceRecord';

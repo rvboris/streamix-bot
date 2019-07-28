@@ -2,7 +2,7 @@ import TelegrafInlineMenu from 'telegraf-inline-menu';
 import botMenu from './bot';
 import { ContextMessageUpdate } from 'telegraf';
 import { ActionCode } from './ActionCode';
-import { Bot, Source } from '../entites';
+import { Bot } from '../entites';
 
 export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.bots.title'));

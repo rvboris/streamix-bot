@@ -20,8 +20,9 @@
     "get-urls": "^9.1.0",
     "iconv-lite": "^0.5.0",
     "interval-promise": "^1.3.0",
-    "lodash": "^4.17.11",
-    "pg": "^7.11.0",
+    "lodash": "^4.17.15",
+    "pg": "^7.12.0",
+    "pretty-quick": "^1.11.1",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.0",
     "telegraf": "^3.30.1",
@@ -31,25 +32,25 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.0.0",
-    "@commitlint/config-conventional": "^8.0.0",
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^8.1.0",
     "@types/dotenv-safe": "^5.0.3",
-    "@types/feedparser": "^2.2.2",
-    "@types/node": "^12.0.10",
-    "@types/request": "^2.48.1",
-    "@typescript-eslint/eslint-plugin": "^1.11.0",
-    "@typescript-eslint/parser": "^1.11.0",
-    "eslint": "^6.0.1",
+    "@types/feedparser": "^2.2.3",
+    "@types/node": "^12.6.8",
+    "@types/request": "^2.48.2",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
+    "eslint": "^6.1.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "husky": "^2.7.0",
+    "husky": "^3.0.1",
     "prettier": "^1.18.2",
     "rimraf": "^2.6.3",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.3"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint",
+      "pre-commit": "pretty-quick --staged && npm run lint",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   }

@@ -4,13 +4,14 @@ It's Telegram bot which help you get information from various type of sources li
 
 ### How it works
 
-This bot uses your bots tokens to overcome telegram limits and send messages to your channels. To start using it you need to create your bot from @BotFather and forward message with bot token to this bot. When your bots are added you can add channels. It can be public or private, there is only one important thing - one of bot that you added must be an administrator in these channels, bot connect them automatically. After those steps you can add sources for bots, each bot can have unlimited sources. Every N minutes this bot check sources and send new data by your bot which connected to channels.
+This bot uses your bots tokens to overcome telegram limits and send messages to your channels. To start using it you need to create your bot from @BotFather and forward message with bot token to this bot. When your bots are added you can add channels. It can be public or private, there is only one important thing - one of bot that you added must be an administrator in these channels, bot connect them automatically. After those steps you can add sources for channels, each channel can have unlimited sources. Every N minutes this bot check sources and send new data by your bot which connected to channels.
 
 ### Technical details
- - Typescript
- - Telegraf
- - TypeORM
- - PostgreSQL
+
+- Typescript
+- Telegraf
+- TypeORM
+- PostgreSQL
 
 ## Usage overview
 
@@ -36,7 +37,6 @@ Lint
 npm run lint
 ```
 
-
 ### License
 
 (The MIT License)
@@ -61,7 +61,6 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 
 ### Resources
 

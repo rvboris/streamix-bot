@@ -22,7 +22,10 @@ export class Bot {
   @JoinColumn()
   public user: User;
 
-  @ManyToMany((): ObjectType<Channel> => Channel, (channel): Bot[] => channel.bots, { cascade: true, onDelete: 'CASCADE' })
+  @ManyToMany((): ObjectType<Channel> => Channel, (channel): Bot[] => channel.bots, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   public channels: Channel[];
 
   public async send(channel: Channel, records: SourceRecord[]): Promise<void> {

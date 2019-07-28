@@ -35,16 +35,17 @@ export const botHandler = (): Middleware<ContextMessageUpdate> => async (ctx, ne
     await ctx.connection.manager.transaction(
       async (transactionalEntityManager): Promise<void> => {
         const channels = await transactionalEntityManager.find(Channel, { user: ctx.user });
-        const botAdminChannels = await filterAsync<Channel>(channels, async (channel): Promise<boolean> => {
-          const chatMembers = await userBot.getChatAdministrators(channel.telegramId);
-          const adminBot = chatMembers.find(
-            ({ user }): boolean => {
+        const botAdminChannels = await filterAsync<Channel>(
+          channels,
+          async (channel): Promise<boolean> => {
+            const chatMembers = await userBot.getChatAdministrators(channel.telegramId);
+            const adminBot = chatMembers.find(({ user }): boolean => {
               return user.is_bot && user.id === botInfo.id;
-            },
-          );
+            });
 
-          return !!adminBot;
-        });
+            return !!adminBot;
+          },
+        );
 
         const newBot = new Bot();
 

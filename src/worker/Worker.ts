@@ -126,18 +126,16 @@ export class Worker {
 
       this._log.info(`start sending ${records.length} records by ${useBot.username}#${useBot.id} bot`);
 
-      useBot.send(channel, records).then(() => {
+      useBot.send(channel, records).then((): void => {
         this._log.info(`sending ${records.length} records by ${useBot.username}#${useBot.id} bot is finished`);
       });
     }
   }
 
   private async _updateSourcesCheckTime(sources: Source[]): Promise<void> {
-    const sourcesIds = sources.map(
-      (source): number => {
-        return source.id;
-      },
-    );
+    const sourcesIds = sources.map((source): number => {
+      return source.id;
+    });
 
     this._log.info(`update sources check time`);
 
@@ -149,9 +147,9 @@ export class Worker {
       .execute();
   }
 
-  private _getCacheKey({dataId, type}: Source): string {
+  private _getCacheKey({ dataId, type }: Source): string {
     if (type === SourceType.RSS) {
-      const {host, pathname} = new URL(dataId);
+      const { host, pathname } = new URL(dataId);
       return `${host}${pathname}`;
     }
 

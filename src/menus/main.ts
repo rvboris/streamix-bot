@@ -82,11 +82,9 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
       let msg = 'From:\n```\n';
 
-      Object.entries(ctx.from).forEach(
-        ([key, value]): void => {
-          msg += `${key}: ${value}\n`;
-        },
-      );
+      Object.entries(ctx.from).forEach(([key, value]): void => {
+        msg += `${key}: ${value}\n`;
+      });
 
       msg += `\`\`\`\nMessage: ${answer}`;
 

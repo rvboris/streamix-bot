@@ -23,20 +23,21 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
       return;
     }
 
-    const adminBots = await filterAsync<Bot>(userBots, async (bot) => {
-      try {
-        const chatMembers = await getTelegram(bot.token).getChatAdministrators(channelId);
-        const adminBot = chatMembers.find(
-          ({ user }): boolean => {
+    const adminBots = await filterAsync<Bot>(
+      userBots,
+      async (bot): Promise<boolean> => {
+        try {
+          const chatMembers = await getTelegram(bot.token).getChatAdministrators(channelId);
+          const adminBot = chatMembers.find(({ user }): boolean => {
             return user.is_bot && user.id.toString() === bot.telegramId;
-          },
-        );
+          });
 
-        return !!adminBot;
-      } catch (e) {
-        return false;
-      }
-    });
+          return !!adminBot;
+        } catch (e) {
+          return false;
+        }
+      },
+    );
 
     if (!adminBots.length) {
       return;

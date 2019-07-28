@@ -9,7 +9,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
   const getChannelsNames = async (): Promise<string[]> => {
     const userChannels = await ctx.connection.manager.find(Channel, { user: ctx.user });
-    return userChannels.map(({id}): string => id.toString());
+    return userChannels.map(({ id }): string => id.toString());
   };
 
   menu.select(ActionCode.SOURCES_CHANNEL_SELECT, getChannelsNames, {
