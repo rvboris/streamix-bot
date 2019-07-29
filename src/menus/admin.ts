@@ -11,18 +11,20 @@ export default (): TelegrafInlineMenu => {
         return;
       }
 
-      const usersCount = await ctx.connection.manager.count(User);
-      const sourcesCount = await ctx.connection.manager.count(Source);
-      const channelsCount = await ctx.connection.manager.count(Channel);
-      const botsCount = await ctx.connection.manager.count(Bot);
-      const topSources = await ctx.connection
-        .createQueryBuilder(Source, 'source')
-        .select("substring(source.dataId from '^(?:https?:)?(?://)?(?:[^@\n]+@)?(?:www.)?([^:/\n]+)')", 'domain')
-        .addSelect('count(*)', 'count')
-        .groupBy('domain')
-        .limit(10)
-        .orderBy('count', 'DESC')
-        .getRawMany();
+      const [usersCount, sourcesCount, channelsCount, botsCount, topSources] = await Promise.all([
+        ctx.connection.manager.count(User),
+        ctx.connection.manager.count(Source),
+        ctx.connection.manager.count(Channel),
+        ctx.connection.manager.count(Bot),
+        ctx.connection
+          .createQueryBuilder(Source, 'source')
+          .select("substring(source.dataId from '^(?:https?:)?(?://)?(?:[^@\n]+@)?(?:www.)?([^:/\n]+)')", 'domain')
+          .addSelect('count(*)', 'count')
+          .groupBy('domain')
+          .limit(10)
+          .orderBy('count', 'DESC')
+          .getRawMany(),
+      ]);
 
       const topSourcesString = topSources.map(({ domain, count }): string => `${domain} - ${count}`).join('\n');
 
