@@ -179,6 +179,7 @@ export class Worker {
       lastRecords = await source.parse();
 
       this._log.info(`parse of source ${source.name}#${source.id} is finished`);
+      this._log.info(`total of records ${lastRecords.length} of source ${source.name}#${source.id}`);
 
       const newRecords = lastRecords.filter((record): boolean => record.date > source.checked);
 
