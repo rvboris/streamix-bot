@@ -21,6 +21,7 @@ export default (): TelegrafInlineMenu => {
         .addSelect('count(*)', 'count')
         .groupBy('domain')
         .limit(10)
+        .orderBy('count', 'DESC')
         .getRawMany();
 
       const topSourcesString = topSources.map(({ domain, count }): string => `${domain} - ${count}`).join('\n');
