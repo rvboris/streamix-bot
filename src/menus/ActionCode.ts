@@ -6,6 +6,7 @@ export enum ActionCode {
   MAIN_ADD_CHANNEL = 'machl',
   MAIN_HELP = 'mhlp',
   MAIN_CONTACT = 'mctc',
+  MAIN_ADMIN = 'madm',
   SETTINGS_LANGUAGE = 'slng',
   LANGUAGE_SELECT = 'lsct',
   BOTS_ADD = 'badd',
@@ -20,4 +21,5 @@ export enum ActionCode {
   SOURCE_CHECK = 'schk',
   CHANNELS_SELECT = 'csct',
   CHANNEL_DELETE = 'cdel',
+  ADMIN_STAT = 'asta',
 }

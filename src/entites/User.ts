@@ -1,14 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToOne,
-  JoinColumn,
-  ObjectType,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, ObjectType, OneToMany } from 'typeorm';
 import { Settings } from './Settings';
 import { Bot } from './Bot';
 import { Source } from './Source';
@@ -52,4 +42,8 @@ export class User {
 
   @OneToMany((): ObjectType<Channel> => Channel, (channel): User => channel.user, { onDelete: 'CASCADE' })
   public channels: Channel[];
+
+  public get isAdmin(): boolean {
+    return this.telegramId === process.env.ADMIN_ID;
+  }
 }

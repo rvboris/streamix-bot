@@ -2,8 +2,9 @@ import TelegrafInlineMenu from 'telegraf-inline-menu';
 import settingsMenu from './settings';
 import botsMenu from './bots';
 import sourcesMenu from './sources';
+import adminMenu from './admin';
 import getTelegram from '../util/getTelegram';
-import { Bot } from '../entites';
+import { Bot, Channel } from '../entites';
 import { ContextMessageUpdate } from 'telegraf';
 import { UserStatus } from '../entites/User';
 import { ActionCode } from './ActionCode';
@@ -46,10 +47,14 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
   menu.submenu((ctx): string => ctx.i18n.t('menus.main.sourcesBtn'), ActionCode.MAIN_SOURCES, sourcesMenu(ctx), {
     hide: async (ctx): Promise<boolean> => {
-      const isAnyBots = await ctx.connection.manager.count(Bot, { user: ctx.user });
+      const isAnyChannels = await ctx.connection.manager.count(Channel, { user: ctx.user });
 
-      return ctx.user.status === UserStatus.STARTED || !isAnyBots;
+      return ctx.user.status === UserStatus.STARTED || !isAnyChannels;
     },
+  });
+
+  menu.submenu((ctx): string => ctx.i18n.t('menus.main.adminBtn'), ActionCode.MAIN_ADMIN, adminMenu(), {
+    hide: async (ctx): Promise<boolean> => !ctx.user.isAdmin,
   });
 
   menu.simpleButton((ctx): string => ctx.i18n.t('menus.main.howToAddChannelBtn'), ActionCode.MAIN_ADD_CHANNEL, {

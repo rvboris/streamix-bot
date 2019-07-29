@@ -10,6 +10,7 @@
       "contactFailText": "❌ Your message not sent. Use only text please.",
       "contactSuccessText": "📬 Your message has been delivered, thank you!",
       "botsBtn": "Manage bots",
+      "adminBtn": "Admin panel",
       "sourcesBtn": "Manage sources",
       "howToAddChannelBtn": "❓How to add channel",
       "howToAddChannelText": "To add channel forward any message from it to this chat.\n\nBot will added if one of your bots is admin where.\n\nSupports public and private channels."
@@ -66,6 +67,11 @@
       "addFailText": "❌ Error, channel not added",
       "deleteSuccessText": "✅ Channel deleted",
       "deleteFailText": "❌ Error, channel not deleted"
+    },
+    "admin": {
+      "title": "Admin panel",
+      "statBtn": "Show statistics",
+      "statText": "Users - ${usersCount}\nSources - ${sourcesCount}\nChannels - ${channelsCount}\nBots - ${botsCount}\n\nTop sources:\n${topSourcesString}"
     }
   },
   "shared": {
