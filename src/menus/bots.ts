@@ -4,10 +4,10 @@ import { ContextMessageUpdate } from 'telegraf';
 import { ActionCode } from './ActionCode';
 import { Bot } from '../entites';
 
-export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
+export default (): TelegrafInlineMenu => {
   const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.bots.title'));
 
-  const getBotsNames = async (): Promise<string[]> => {
+  const getBotsNames = async (ctx: ContextMessageUpdate): Promise<string[]> => {
     const userBots = await ctx.connection.manager.find(Bot, { user: ctx.user });
     return userBots.map((bot): string => bot.id.toString());
   };

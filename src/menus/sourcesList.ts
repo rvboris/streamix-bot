@@ -19,7 +19,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
   const menu = new TelegrafInlineMenu(getMenuTitle);
 
-  const getSourcesNames = async (): Promise<string[]> => {
+  const getSourcesNames = async (ctx: ContextMessageUpdate): Promise<string[]> => {
     const settings = await ctx.connection.manager.findOne(Settings, { user: ctx.user });
     const userSources = await ctx.connection.manager.find(Source, { user: ctx.user, channel: settings.defaultChannel });
 

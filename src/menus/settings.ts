@@ -11,5 +11,7 @@ export default (): TelegrafInlineMenu => {
     changeLanguageMenu(),
   );
 
+  menu.setCommand('settings');
+
   return menu;
 };

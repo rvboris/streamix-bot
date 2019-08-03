@@ -41,7 +41,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
     hide: (ctx): boolean => ctx.user.status === UserStatus.STARTED,
   });
 
-  menu.submenu((ctx): string => ctx.i18n.t('menus.main.botsBtn'), ActionCode.MAIN_BOTS, botsMenu(ctx), {
+  menu.submenu((ctx): string => ctx.i18n.t('menus.main.botsBtn'), ActionCode.MAIN_BOTS, botsMenu(), {
     hide: (ctx): boolean => ctx.user.status === UserStatus.STARTED,
   });
 

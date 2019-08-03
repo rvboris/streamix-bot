@@ -21,6 +21,7 @@ getConnection().then((connection): void => {
   bot.use(navigation());
   bot.use(unknownCallback());
   bot.catch(catchHandler());
+
   bot.launch();
   worker.start();
 });

@@ -7,7 +7,7 @@ import { Source, Settings, Channel } from '../entites';
 export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.sources.title'));
 
-  const getChannelsNames = async (): Promise<string[]> => {
+  const getChannelsNames = async (ctx: ContextMessageUpdate): Promise<string[]> => {
     const userChannels = await ctx.connection.manager.find(Channel, { user: ctx.user });
     return userChannels.map(({ id }): string => id.toString());
   };
@@ -37,6 +37,8 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   };
 
   menu.submenu(getListBtnText, ActionCode.SOURCES_LIST, sourcesListMenu(ctx));
+
+  menu.setCommand('sources');
 
   return menu;
 };
