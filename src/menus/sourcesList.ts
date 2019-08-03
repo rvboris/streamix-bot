@@ -7,6 +7,7 @@ import { ActionCode } from './ActionCode';
 import { Source, Settings } from '../entites';
 import { SourceType } from '../entites/Source';
 import { RssParser } from '../parsers/RssParser';
+import { subDays } from 'date-fns';
 
 export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   const getMenuTitle = async (ctx: ContextMessageUpdate): Promise<string> => {
@@ -74,13 +75,14 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
         }
 
         const newSource = new Source();
+        const timeAgo = subDays(new Date(), 90);
 
         newSource.name = sourceName;
         newSource.type = SourceType.RSS;
         newSource.dataId = firstSource;
         newSource.user = ctx.user;
         newSource.channel = ctx.user.settings.defaultChannel;
-        newSource.checked = new Date();
+        newSource.checked = timeAgo;
 
         await ctx.connection.manager.save(newSource);
       } catch (e) {

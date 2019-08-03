@@ -61,7 +61,9 @@ export class RssParser implements Parser {
         while ((item = stream.read())) {
           items.push(checkForNoneLengthEnclosures(item));
         }
+      });
 
+      feedparser.on('end', function(): void {
         resolve(items);
       });
 
