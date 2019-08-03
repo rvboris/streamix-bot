@@ -16,10 +16,11 @@ export class RssParser implements Parser {
     return items.map(
       (record): SourceRecord => {
         return {
+          uuid: record.guid,
           title: record.title,
           dataId: record.link,
           content: record.summary,
-          date: new Date(record.date),
+          date: record.date,
           source,
         };
       },

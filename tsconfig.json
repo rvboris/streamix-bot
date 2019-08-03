@@ -9,22 +9,13 @@
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "node_modules/",
-      ],
-      "typings/*": [
-        "src/types/*"
-      ]
-    },
+      "*": ["node_modules/"],
+      "typings/*": ["src/types/*"]
+    }
   },
-  "include": [
-    "src/**/*",
-    "src/locales/*.json",
-    "src/types"
-  ],
-  "exclude": [
-    "src/test/**/*.spec.ts"
-  ]
+  "include": ["src/**/*", "src/locales/*.json", "src/types"],
+  "exclude": ["src/test/**/*.spec.ts"]
 }

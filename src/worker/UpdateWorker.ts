@@ -5,22 +5,25 @@ import { User, Source, Channel, SourceType } from '../entites';
 import { Logger } from 'winston';
 import { MappedSourceRecords } from './MappedSourceRecords';
 import { SourceRecord } from '../parsers/SourceRecord';
+import { UpdateManager } from './UpdateManager';
 
 const DEFAULT_INTERVAL = 15 * 60 * 1000;
 const USERS_PER_QUERY = 10;
 
-export class Worker {
+export class UpdateWorker {
   private _log: Logger;
   private _intervalTime = DEFAULT_INTERVAL;
   private _usersPerQuery = USERS_PER_QUERY;
   private _isStopped = false;
   private _connection: Connection;
   private _proccesedCache: Map<string, SourceRecord[]>;
+  private _updateControl: UpdateManager;
 
   public constructor(connection: Connection) {
     this._connection = connection;
     this._log = logger.child({ isWorker: true });
     this._proccesedCache = new Map<string, SourceRecord[]>();
+    this._updateControl = new UpdateManager(this._connection);
   }
 
   public async start(): Promise<void> {
@@ -38,6 +41,8 @@ export class Worker {
     }
 
     this._log.info(`start iteration ${iterationNumber}`);
+
+    await this._updateControl.cleanUp();
 
     this._proccesedCache.clear();
 
@@ -100,6 +105,14 @@ export class Worker {
     await this._sendRecords(groupedSources);
   }
 
+  private async _checkSourcesDate(sourcesRecords: SourceRecord[]): Promise<SourceRecord[]> {
+    for (const sourceRecord of sourcesRecords) {
+      sourceRecord.date = await this._updateControl.getSourceRecordDate(sourceRecord);
+    }
+
+    return sourcesRecords;
+  }
+
   private _groupSourcesByChannel(sourcesRecords: SourceRecord[]): MappedSourceRecords {
     const sortedRecords = sourcesRecords.sort(
       (a, b): number => new Date(a.date).getTime() - new Date(b.date).getTime(),
@@ -160,7 +173,7 @@ export class Worker {
     return sources.reduce(async (previousPromise, source): Promise<SourceRecord[]> => {
       const collection = await previousPromise;
 
-      let lastRecords;
+      let lastRecords: SourceRecord[];
 
       const cacheKey = this._getCacheKey(source);
       const isSourceCached = this._proccesedCache.has(cacheKey);
@@ -181,7 +194,8 @@ export class Worker {
       this._log.info(`parse of source ${source.name}#${source.id} is finished`);
       this._log.info(`total of records ${lastRecords.length} of source ${source.name}#${source.id}`);
 
-      const newRecords = lastRecords.filter((record): boolean => record.date > source.checked);
+      const sourcesRecordsWithDates = await this._checkSourcesDate(lastRecords);
+      const newRecords = sourcesRecordsWithDates.filter((record): boolean => record.date > source.checked);
 
       this._log.info(`total of new records ${newRecords.length} of source ${source.name}#${source.id}`);
 

@@ -12,6 +12,10 @@ const logContext = format((info): any => {
     info.message = `[worker] ${formattedMessage}`;
   }
 
+  if (info.isUpdateManager) {
+    info.message = `[updates] ${formattedMessage}`;
+  }
+
   if (ctx && ctx.from) {
     info.message = `[${ctx.from.id}/${ctx.from.username}] ${formattedMessage}`;
   }

@@ -1,8 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ObjectType, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  ObjectType,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { User } from './User';
 import { ParserFactory } from '../parsers/ParserFactory';
 import { SourceRecord } from '../parsers/SourceRecord';
 import { Channel } from './Channel';
+import { Update } from './Update';
 
 export enum SourceType {
   RSS = 1,
@@ -35,6 +45,9 @@ export class Source {
   @ManyToOne((): ObjectType<User> => User, (user): Source[] => user.sources)
   @JoinColumn()
   public user: User;
+
+  @OneToMany((): ObjectType<Update> => Update, (update): Source => update.source)
+  public updates: Update[];
 
   public async parse(): Promise<SourceRecord[]> {
     return ParserFactory.getParser(this.type).parse(this);
