@@ -10,7 +10,14 @@ import { userInfo, dbConnection, navigation, i18n, unknownCallback } from './mid
 import { catchHandler, channelHandler, botHandler } from './handlers';
 
 getConnection().then((connection): void => {
-  const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  const bot = new Telegraf(process.env.TELEGRAM_TOKEN, {
+    telegram: {
+      webhookReply: !isProduction,
+    },
+  });
+
   const worker = new UpdateWorker(connection);
   const defaultLanguage = 'en';
 
@@ -22,10 +29,18 @@ getConnection().then((connection): void => {
   bot.use(unknownCallback());
   bot.catch(catchHandler());
 
-  if (process.env.NODE_ENV === 'production') {
-    bot.startWebhook(process.env.WEBHOOK_PATH, null, parseInt(process.env.WEBHOOK_PORT, 10));
-  }
+  const launchConfig = isProduction
+    ? {
+        webhook: {
+          domain: process.env.WEBHOOK_DOMAIN,
+          host: process.env.WEBHOOK_HOST,
+          hookPath: process.env.WEBHOOK_PATH,
+          port: parseInt(process.env.WEBHOOK_PORT, 10),
+        },
+      }
+    : undefined;
 
-  bot.launch();
+  bot.launch(launchConfig as any);
+
   worker.start();
 });
