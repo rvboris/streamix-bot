@@ -22,6 +22,10 @@ getConnection().then((connection): void => {
   bot.use(unknownCallback());
   bot.catch(catchHandler());
 
+  if (process.env.NODE_ENV === 'production') {
+    bot.startWebhook(process.env.WEBHOOK_PATH, null, parseInt(process.env.WEBHOOK_PORT, 10));
+  }
+
   bot.launch();
   worker.start();
 });
