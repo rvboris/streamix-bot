@@ -34,7 +34,7 @@ export class UpdateManager {
 
   public async cleanUp(): Promise<number> {
     const cleanDate = subDays(new Date(), this._clearDays);
-    const formattedDate = format(cleanDate, 'MM/DD/YYYY');
+    const formattedDate = format(cleanDate, 'MM/dd/yyyy');
 
     this._log.info(`cleanup updates - clean date is ${formattedDate}`);
 
