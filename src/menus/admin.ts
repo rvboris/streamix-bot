@@ -1,6 +1,6 @@
 import TelegrafInlineMenu from 'telegraf-inline-menu';
 import { ActionCode } from './ActionCode';
-import { Source, Channel, User, Bot } from '../entites';
+import { Source, Channel, User, Bot, Update } from '../entites';
 
 export default (): TelegrafInlineMenu => {
   const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.admin.title'));
@@ -11,11 +11,12 @@ export default (): TelegrafInlineMenu => {
         return;
       }
 
-      const [usersCount, sourcesCount, channelsCount, botsCount, topSources] = await Promise.all([
+      const [usersCount, sourcesCount, channelsCount, botsCount, updatesCount, topSources] = await Promise.all([
         ctx.connection.manager.count(User),
         ctx.connection.manager.count(Source),
         ctx.connection.manager.count(Channel),
         ctx.connection.manager.count(Bot),
+        ctx.connection.manager.count(Update),
         ctx.connection
           .createQueryBuilder(Source, 'source')
           .select("substring(source.dataId from '^(?:https?:)?(?://)?(?:[^@\n]+@)?(?:www.)?([^:/\n]+)')", 'domain')
@@ -33,6 +34,7 @@ export default (): TelegrafInlineMenu => {
         sourcesCount,
         channelsCount,
         botsCount,
+        updatesCount,
         topSourcesString,
       });
 

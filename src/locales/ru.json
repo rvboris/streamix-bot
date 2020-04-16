@@ -71,7 +71,7 @@
     "admin": {
       "title": "Панель администратора",
       "statBtn": "Статистика",
-      "statText": "Пользователи - ${usersCount}\nИсточники - ${sourcesCount}\nКаналы - ${channelsCount}\nБоты - ${botsCount}\n\nТОП источников:\n${topSourcesString}"
+      "statText": "Пользователи - ${usersCount}\nИсточники - ${sourcesCount}\nКаналы - ${channelsCount}\nБоты - ${botsCount}\n\nКеш - ${updatesCount}\n\nТОП источников:\n${topSourcesString}"
     }
   },
   "shared": {

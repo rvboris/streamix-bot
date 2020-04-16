@@ -71,7 +71,7 @@
     "admin": {
       "title": "Admin panel",
       "statBtn": "Show statistics",
-      "statText": "Users - ${usersCount}\nSources - ${sourcesCount}\nChannels - ${channelsCount}\nBots - ${botsCount}\n\nTop sources:\n${topSourcesString}"
+      "statText": "Users - ${usersCount}\nSources - ${sourcesCount}\nChannels - ${channelsCount}\nBots - ${botsCount}\n\nCache - ${updatesCount}\n\nTop sources:\n${topSourcesString}"
     }
   },
   "shared": {
