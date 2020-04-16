@@ -8,6 +8,7 @@ import { Source, Settings } from '../entites';
 import { SourceType } from '../entites/Source';
 import { RssParser } from '../parsers/RssParser';
 import { subDays } from 'date-fns';
+import { QuestionCode } from './QuestionCode';
 
 export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   const getMenuTitle = async (ctx: ContextMessageUpdate): Promise<string> => {
@@ -38,6 +39,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   });
 
   menu.question((ctx): string => ctx.i18n.t('menus.sourcesList.addRssBtn'), ActionCode.SOURCES_LIST_ADD_RSS, {
+    uniqueIdentifier: QuestionCode.ADD_RSS,
     questionText: ctx.i18n.t('menus.sourcesList.addRssQuestion'),
     setFunc: async (ctx, answer): Promise<void> => {
       if (!answer) {

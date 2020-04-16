@@ -8,6 +8,7 @@ import { Bot, Channel } from '../entites';
 import { ContextMessageUpdate } from 'telegraf';
 import { UserStatus } from '../entites/User';
 import { ActionCode } from './ActionCode';
+import { QuestionCode } from './QuestionCode';
 
 const telegramInstance = getTelegram();
 
@@ -78,6 +79,7 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
   });
 
   menu.question((ctx): string => ctx.i18n.t('menus.main.contactBtn'), ActionCode.MAIN_CONTACT, {
+    uniqueIdentifier: QuestionCode.CONTACT,
     questionText: ctx.i18n.t('menus.main.contactQuestion'),
     setFunc: async (ctx, answer): Promise<void> => {
       if (!answer) {
