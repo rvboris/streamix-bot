@@ -38,7 +38,9 @@ export class Source {
   @Column()
   public checked: Date;
 
-  @ManyToOne((): ObjectType<Channel> => Channel, (channel): Source[] => channel.sources, { onDelete: 'CASCADE' })
+  @ManyToOne((): ObjectType<Channel> => Channel, (channel): Source[] => channel.sources, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   public channel: Channel;
 

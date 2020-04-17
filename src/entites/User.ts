@@ -37,10 +37,14 @@ export class User {
   @OneToMany((): ObjectType<Bot> => Bot, (bot): User => bot.user, { onDelete: 'CASCADE' })
   public bots: Bot[];
 
-  @OneToMany((): ObjectType<Source> => Source, (source): User => source.user, { onDelete: 'CASCADE' })
+  @OneToMany((): ObjectType<Source> => Source, (source): User => source.user, {
+    onDelete: 'CASCADE',
+  })
   public sources: Source[];
 
-  @OneToMany((): ObjectType<Channel> => Channel, (channel): User => channel.user, { onDelete: 'CASCADE' })
+  @OneToMany((): ObjectType<Channel> => Channel, (channel): User => channel.user, {
+    onDelete: 'CASCADE',
+  })
   public channels: Channel[];
 
   public get isAdmin(): boolean {

@@ -78,8 +78,6 @@ export class UpdateManager {
   }
 
   private _getSourceRecordHash(sourceRecord: SourceRecord): string {
-    return createHash('sha1')
-      .update(sourceRecord.uuid)
-      .digest('hex');
+    return createHash('sha1').update(sourceRecord.uuid).digest('hex');
   }
 }

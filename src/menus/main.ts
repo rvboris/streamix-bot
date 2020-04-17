@@ -48,7 +48,9 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
   menu.submenu((ctx): string => ctx.i18n.t('menus.main.sourcesBtn'), ActionCode.MAIN_SOURCES, sourcesMenu(ctx), {
     hide: async (ctx): Promise<boolean> => {
-      const isAnyChannels = await ctx.connection.manager.count(Channel, { user: ctx.user });
+      const isAnyChannels = await ctx.connection.manager.count(Channel, {
+        user: ctx.user,
+      });
 
       return ctx.user.status === UserStatus.STARTED || !isAnyChannels;
     },
@@ -95,7 +97,9 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
       msg += `\`\`\`\nMessage: ${answer}`;
 
-      await telegramInstance.sendMessage(process.env.ADMIN_ID, msg, { parse_mode: 'Markdown' });
+      await telegramInstance.sendMessage(process.env.ADMIN_ID, msg, {
+        parse_mode: 'Markdown',
+      });
       await ctx.reply(ctx.i18n.t('menus.main.contactSuccessText'));
     },
     hide: (ctx): boolean => ctx.user.status === UserStatus.STARTED,

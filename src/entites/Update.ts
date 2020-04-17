@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ObjectType, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ObjectType, ManyToOne } from 'typeorm';
 import { Source } from './Source';
 
 @Entity()
@@ -15,6 +15,8 @@ export class Update {
   @Column()
   public checked: Date;
 
-  @ManyToOne((): ObjectType<Source> => Source, (source): Update[] => source.updates, { onDelete: 'CASCADE' })
+  @ManyToOne((): ObjectType<Source> => Source, (source): Update[] => source.updates, {
+    onDelete: 'CASCADE',
+  })
   public source: Source;
 }

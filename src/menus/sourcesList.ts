@@ -22,14 +22,20 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
 
   const getSourcesNames = async (ctx: ContextMessageUpdate): Promise<string[]> => {
     const settings = await ctx.connection.manager.findOne(Settings, { user: ctx.user });
-    const userSources = await ctx.connection.manager.find(Source, { user: ctx.user, channel: settings.defaultChannel });
+    const userSources = await ctx.connection.manager.find(Source, {
+      user: ctx.user,
+      channel: settings.defaultChannel,
+    });
 
     return userSources ? userSources.map((source): string => source.id.toString()) : [];
   };
 
   menu.selectSubmenu(ActionCode.SOURCES_LIST_SELECT, getSourcesNames, SourceMenu(), {
     textFunc: async (ctx, key): Promise<string> => {
-      const source = await ctx.connection.manager.findOne(Source, { id: parseInt(key, 10), user: ctx.user });
+      const source = await ctx.connection.manager.findOne(Source, {
+        id: parseInt(key, 10),
+        user: ctx.user,
+      });
       return ctx.i18n.t('menus.sourcesList.sourceSelectBtn', {
         sourceName: source.name,
         sourceType: SourceType[source.type],
@@ -70,9 +76,14 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
           await new RssParser().try(firstSource);
         } catch (e) {
           logger.error(e.stack, { ctx });
-          await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceRecords', { url: firstSource }), {
-            disable_web_page_preview: true,
-          } as any);
+          await ctx.reply(
+            ctx.i18n.t('menus.sourcesList.invalidSourceRecords', {
+              url: firstSource,
+            }),
+            {
+              disable_web_page_preview: true,
+            } as any,
+          );
           return;
         }
 

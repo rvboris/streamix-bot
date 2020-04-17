@@ -25,7 +25,9 @@ export default (): TelegrafInlineMenu => {
 
   menu.selectSubmenu(ActionCode.CHANNELS_SELECT, getChannelsNames, channelMenu(), {
     textFunc: async (ctx, key): Promise<string> => {
-      const { name } = await ctx.connection.manager.findOne(Channel, { id: parseInt(key, 10) });
+      const { name } = await ctx.connection.manager.findOne(Channel, {
+        id: parseInt(key, 10),
+      });
       return name;
     },
     columns: 1,

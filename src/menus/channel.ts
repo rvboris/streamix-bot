@@ -19,7 +19,9 @@ export default (): TelegrafInlineMenu => {
 
             await transactionalEntityManager.delete(Channel, { id: channelId });
 
-            const channels = await transactionalEntityManager.find(Channel, { user: ctx.user });
+            const channels = await transactionalEntityManager.find(Channel, {
+              user: ctx.user,
+            });
 
             if (channels) {
               await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultChannel: channels[0] });

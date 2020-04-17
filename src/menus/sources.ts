@@ -18,13 +18,25 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
       return settings.defaultChannel.id === parseInt(key, 10);
     },
     setFunc: async (ctx, key): Promise<void> => {
-      const channel = await ctx.connection.manager.findOne(Channel, { id: parseInt(key, 10), user: ctx.user });
+      const channel = await ctx.connection.manager.findOne(Channel, {
+        id: parseInt(key, 10),
+        user: ctx.user,
+      });
       await ctx.connection.manager.update(Settings, { user: ctx.user }, { defaultChannel: channel });
     },
     textFunc: async (ctx, key): Promise<string> => {
-      const channel = await ctx.connection.manager.findOne(Channel, { id: parseInt(key, 10), user: ctx.user });
-      const sourcesCount = await ctx.connection.manager.count(Source, { user: ctx.user, channel });
-      return ctx.i18n.t('menus.sources.channelSelectBtn', { sources: sourcesCount, channelName: channel.name });
+      const channel = await ctx.connection.manager.findOne(Channel, {
+        id: parseInt(key, 10),
+        user: ctx.user,
+      });
+      const sourcesCount = await ctx.connection.manager.count(Source, {
+        user: ctx.user,
+        channel,
+      });
+      return ctx.i18n.t('menus.sources.channelSelectBtn', {
+        sources: sourcesCount,
+        channelName: channel.name,
+      });
     },
     columns: 1,
   });

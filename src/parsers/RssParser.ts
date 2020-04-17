@@ -53,21 +53,19 @@ export class RssParser implements Parser {
       const feedparser = new FeedParser({});
       const items = [];
 
-      feedparser.on('readable', function(): void {
-        const stream = this;
-
+      feedparser.on('readable', function (): void {
         let item: Item;
 
-        while ((item = stream.read())) {
+        while ((item = this.read())) {
           items.push(checkForNoneLengthEnclosures(item));
         }
       });
 
-      feedparser.on('end', function(): void {
+      feedparser.on('end', function (): void {
         resolve(items);
       });
 
-      req.on('response', function(res): void {
+      req.on('response', function (res): void {
         const charset = getCharset(res).charset;
 
         if (res.statusCode !== 200) {

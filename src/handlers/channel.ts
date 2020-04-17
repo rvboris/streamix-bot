@@ -43,7 +43,9 @@ export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx
       return;
     }
 
-    const channel = await ctx.connection.manager.findOne(Channel, { telegramId: channelId.toString() });
+    const channel = await ctx.connection.manager.findOne(Channel, {
+      telegramId: channelId.toString(),
+    });
 
     if (channel) {
       return;

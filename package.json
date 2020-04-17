@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "start": "node dist/bot.js",
-    "lint": "eslint src/*.ts"
+    "lint": "tsc --noEmit && eslint './src/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "keywords": [
     "bot",

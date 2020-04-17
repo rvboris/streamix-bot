@@ -54,7 +54,7 @@ export class Sender {
         disable_web_page_preview: true,
       });
 
-      await new Promise(resolve => setTimeout(resolve, this._pauseBetweenMessages * 1000));
+      await new Promise((resolve) => setTimeout(resolve, this._pauseBetweenMessages * 1000));
     }
   }
 }

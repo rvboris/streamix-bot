@@ -52,12 +52,18 @@ export default (): TelegrafInlineMenu => {
               );
 
               if (!bots.length) {
-                await transactionalEntityManager.delete(Channel, { id: channel.id, user: ctx.user });
+                await transactionalEntityManager.delete(Channel, {
+                  id: channel.id,
+                  user: ctx.user,
+                });
               }
             }
 
             const bot = (await transactionalEntityManager.findOne(Bot, { user: ctx.user })) || null;
-            const channel = (await transactionalEntityManager.findOne(Channel, { user: ctx.user })) || null;
+            const channel =
+              (await transactionalEntityManager.findOne(Channel, {
+                user: ctx.user,
+              })) || null;
 
             await transactionalEntityManager.update(
               Settings,
