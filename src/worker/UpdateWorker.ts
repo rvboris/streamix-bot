@@ -24,6 +24,8 @@ export class UpdateWorker {
     this._log = logger.child({ isWorker: true });
     this._proccesedCache = new Map<string, SourceRecord[]>();
     this._updateControl = new UpdateManager(this._connection);
+
+    this._log.info(`start bot in ${process.env.NODE_ENV} mode`);
   }
 
   public async start(): Promise<void> {
