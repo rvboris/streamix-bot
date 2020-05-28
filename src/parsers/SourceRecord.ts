@@ -1,10 +1,6 @@
+import { Record } from './Record';
 import { Source } from '../entites';
 
-export interface SourceRecord {
-  uuid: string;
-  title: string;
-  dataId: string;
-  content: string;
-  date: Date | null;
+export interface SourceRecord extends Record {
   source: Source;
 }

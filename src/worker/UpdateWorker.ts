@@ -1,11 +1,15 @@
 import interval from 'interval-promise';
+import pLimit, { Limit } from 'p-limit';
 import logger from '../util/logger';
 import { Connection } from 'typeorm';
 import { User, Source, Channel, SourceType } from '../entites';
 import { Logger } from 'winston';
 import { MappedSourceRecords } from './MappedSourceRecords';
 import { SourceRecord } from '../parsers/SourceRecord';
+import { Record } from '../parsers/Record';
 import { UpdateManager } from './UpdateManager';
+import { mapRecordsToSource } from '../util/mapRecordsToSource';
+import { mapSourceRecordToRecord } from '../util/mapSourceRecordToRecord';
 
 const DEFAULT_INTERVAL = 15 * 60 * 1000;
 const USERS_PER_QUERY = 10;
@@ -16,14 +20,20 @@ export class UpdateWorker {
   private _usersPerQuery = USERS_PER_QUERY;
   private _isStopped = false;
   private _connection: Connection;
-  private _proccesedCache: Map<string, SourceRecord[]>;
+  private _proccesedCache: Map<string, Record[]>;
   private _updateControl: UpdateManager;
+  private _usersIterationConcurrent: Limit;
+  private _sourcesConcurrent: Limit;
+  private _sendingConcurrent: Limit;
 
   public constructor(connection: Connection) {
     this._connection = connection;
     this._log = logger.child({ isWorker: true });
     this._proccesedCache = new Map<string, SourceRecord[]>();
     this._updateControl = new UpdateManager(this._connection);
+    this._usersIterationConcurrent = pLimit(USERS_PER_QUERY);
+    this._sourcesConcurrent = pLimit(3);
+    this._sendingConcurrent = pLimit(3);
 
     this._log.info(`start bot in ${process.env.NODE_ENV} mode`);
   }
@@ -62,9 +72,11 @@ export class UpdateWorker {
           loadEagerRelations: false,
         });
 
-        for (const user of users) {
-          await this._processUser(user);
-        }
+        await Promise.all<void>(
+          users.map((user) => {
+            return this._usersIterationConcurrent(() => this._processUser(user));
+          }),
+        );
       }
     } catch (e) {
       this._log.error(e.stack);
@@ -108,11 +120,14 @@ export class UpdateWorker {
   }
 
   private async _checkSourcesDate(sourcesRecords: SourceRecord[]): Promise<SourceRecord[]> {
-    for (const sourceRecord of sourcesRecords) {
-      sourceRecord.date = await this._updateControl.getSourceRecordDate(sourceRecord);
-    }
-
-    return sourcesRecords;
+    return Promise.all(
+      sourcesRecords.map(async (sourceRecord) => {
+        return {
+          ...sourceRecord,
+          date: await this._updateControl.getSourceRecordDate(sourceRecord),
+        };
+      }),
+    );
   }
 
   private _groupSourcesByChannel(sourcesRecords: SourceRecord[]): MappedSourceRecords {
@@ -135,16 +150,20 @@ export class UpdateWorker {
   }
 
   private _sendRecords(groupedRecords: MappedSourceRecords): void {
-    for (const [, { channel, records }] of groupedRecords) {
-      const bots = channel.bots;
-      const useBot = bots[Math.floor(Math.random() * bots.length)];
+    Promise.all(
+      Array.from(groupedRecords).map(([, { channel, records }]) => {
+        this._sendingConcurrent(() => {
+          const bots = channel.bots;
+          const useBot = bots[Math.floor(Math.random() * bots.length)];
 
-      this._log.info(`start sending ${records.length} records by ${useBot.username}#${useBot.id} bot`);
+          this._log.info(`start sending ${records.length} records by ${useBot.username}#${useBot.id} bot`);
 
-      useBot.send(channel, records).then((): void => {
-        this._log.info(`sending ${records.length} records by ${useBot.username}#${useBot.id} bot is finished`);
-      });
-    }
+          return useBot.send(channel, records).then((): void => {
+            this._log.info(`sending ${records.length} records by ${useBot.username}#${useBot.id} bot is finished`);
+          });
+        });
+      }),
+    );
   }
 
   private async _updateSourcesCheckTime(sources: Source[]): Promise<void> {
@@ -172,41 +191,38 @@ export class UpdateWorker {
   }
 
   private async _processSources(sources: Source[]): Promise<SourceRecord[]> {
-    return sources.reduce(async (previousPromise, source): Promise<SourceRecord[]> => {
-      const collection = await previousPromise;
+    const recordsBySources = await Promise.all(
+      sources.map((source) => {
+        return this._sourcesConcurrent(async () => {
+          const cacheKey = this._getCacheKey(source);
+          const isSourceCached = this._proccesedCache.has(cacheKey);
 
-      let lastRecords: SourceRecord[];
+          if (isSourceCached) {
+            this._log.info(`get source from cache ${source.name}#${source.id}`);
+            return mapRecordsToSource(this._proccesedCache.get(cacheKey), source);
+          }
 
-      const cacheKey = this._getCacheKey(source);
-      const isSourceCached = this._proccesedCache.has(cacheKey);
+          this._log.info(`starting parse of source ${source.name}#${source.id}`);
 
-      if (isSourceCached) {
-        lastRecords = this._proccesedCache.get(cacheKey);
-        collection.push(...lastRecords);
+          const lastRecords = await source.parse();
 
-        this._log.info(`get source from cache ${source.name}#${source.id}`);
+          this._log.info(`parse of source ${source.name}#${source.id} is finished`);
+          this._log.info(`total of records ${lastRecords.length} of source ${source.name}#${source.id}`);
 
-        return collection;
-      }
+          const sourcesRecordsWithDates = await this._checkSourcesDate(lastRecords);
+          const newRecords = sourcesRecordsWithDates.filter((record): boolean => record.date > source.checked);
 
-      this._log.info(`starting parse of source ${source.name}#${source.id}`);
+          this._log.info(`total of new records ${newRecords.length} of source ${source.name}#${source.id}`);
 
-      lastRecords = await source.parse();
+          if (newRecords.length) {
+            this._proccesedCache.set(cacheKey, mapSourceRecordToRecord(newRecords));
+          }
 
-      this._log.info(`parse of source ${source.name}#${source.id} is finished`);
-      this._log.info(`total of records ${lastRecords.length} of source ${source.name}#${source.id}`);
+          return newRecords;
+        });
+      }),
+    );
 
-      const sourcesRecordsWithDates = await this._checkSourcesDate(lastRecords);
-      const newRecords = sourcesRecordsWithDates.filter((record): boolean => record.date > source.checked);
-
-      this._log.info(`total of new records ${newRecords.length} of source ${source.name}#${source.id}`);
-
-      if (newRecords.length) {
-        collection.push(...newRecords);
-        this._proccesedCache.set(cacheKey, newRecords);
-      }
-
-      return collection;
-    }, Promise.resolve([]));
+    return recordsBySources.reduce((acc, prev) => [...acc, ...prev], []);
   }
 }

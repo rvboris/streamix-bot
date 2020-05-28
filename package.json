@@ -22,6 +22,7 @@
     "iconv-lite": "^0.5.1",
     "interval-promise": "^1.4.0",
     "lodash": "^4.17.15",
+    "p-limit": "^2.3.0",
     "pg": "^8.0.2",
     "pg-native": "^3.0.0",
     "pretty-quick": "^2.0.1",
