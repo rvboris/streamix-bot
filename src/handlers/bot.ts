@@ -38,12 +38,16 @@ export const botHandler = (): Middleware<ContextMessageUpdate> => async (ctx, ne
         const botAdminChannels = await filterAsync<Channel>(
           channels,
           async (channel): Promise<boolean> => {
-            const chatMembers = await userBot.getChatAdministrators(channel.telegramId);
-            const adminBot = chatMembers.find(({ user }): boolean => {
-              return user.is_bot && user.id === botInfo.id;
-            });
+            try {
+              const chatMembers = await userBot.getChatAdministrators(channel.telegramId);
+              const adminBot = chatMembers.find(({ user }): boolean => {
+                return user.is_bot && user.id === botInfo.id;
+              });
 
-            return !!adminBot;
+              return !!adminBot;
+            } catch (e) {
+              return false;
+            }
           },
         );
 

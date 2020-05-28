@@ -1,9 +1,12 @@
-import { mapAsync } from './mapAsync';
+export const filterAsync = async <T>(arr: T[], callback: (val: T) => Promise<boolean>): Promise<T[]> => {
+  const fail = Symbol();
+  const promises = arr.map(async (item) => {
+    try {
+      return (await callback(item)) ? item : fail;
+    } catch (e) {
+      return fail;
+    }
+  });
 
-export async function filterAsync<T>(
-  array: T[],
-  callbackfn: (value: T, index: number, array: T[]) => Promise<boolean>,
-): Promise<T[]> {
-  const filterMap = await mapAsync(array, callbackfn);
-  return array.filter((value, index) => filterMap[index]);
-}
+  return (await Promise.all(promises)).filter((i) => i !== fail) as T[];
+};
