@@ -1,5 +1,6 @@
-import { ContextMessageUpdate, Middleware } from 'telegraf';
 import TelegrafI18n from 'telegraf-i18n';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { Middleware } from 'telegraf';
 
 export const i18n = ({
   directory,
@@ -7,7 +8,7 @@ export const i18n = ({
 }: {
   directory: string;
   defaultLanguage: string;
-}): Middleware<ContextMessageUpdate> => (ctx: ContextMessageUpdate, next: Function): void => {
+}): Middleware<ExtendedTelegrafContext> => (ctx: ExtendedTelegrafContext, next: () => void): void => {
   const i18n = new TelegrafI18n({
     defaultLanguage,
     directory,

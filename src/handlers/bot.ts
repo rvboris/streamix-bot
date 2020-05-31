@@ -1,14 +1,18 @@
-import Telegram from 'telegraf/telegram';
 import logger from '../util/logger';
-import { Bot, Settings, Channel } from '../entites';
-import { Middleware, ContextMessageUpdate } from 'telegraf';
-import { get } from 'lodash';
+import Telegram from 'telegraf/telegram';
+import { Bot, Channel, Settings } from '../entites';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { filterAsync } from '../util/filterAsync';
+import { get } from 'lodash';
+import { Middleware } from 'telegraf';
 
 const BOT_FATHER_ID = '93372553';
 const BOT_REGEXP = /\d+:.{35}/;
 
-export const botHandler = (): Middleware<ContextMessageUpdate> => async (ctx, next): Promise<void> => {
+export const botHandler = (): Middleware<ExtendedTelegrafContext> => async (
+  ctx: ExtendedTelegrafContext,
+  next: () => void,
+): Promise<void> => {
   try {
     if (get(ctx, 'message.forward_from.id', '').toString() !== BOT_FATHER_ID) {
       return next && next();

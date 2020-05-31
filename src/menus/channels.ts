@@ -1,13 +1,13 @@
-import TelegrafInlineMenu from 'telegraf-inline-menu';
-import { ActionCode } from './ActionCode';
+import { channelMenu } from './channel';
+import { ActionCode } from '../enums/ActionCode';
 import { Channel } from '../entites';
-import { ContextMessageUpdate } from 'telegraf';
-import channelMenu from './channel';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { MenuTemplate } from 'telegraf-inline-menu';
 
-export default (): TelegrafInlineMenu => {
-  const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.channels.title'));
+export const channelsMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
+  const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.channels.title'));
 
-  const getChannelsNames = async (ctx: ContextMessageUpdate): Promise<string[]> => {
+  const getChannelsNames = async (ctx: ExtendedTelegrafContext): Promise<string[]> => {
     if (!ctx.match) {
       return [];
     }
@@ -23,8 +23,8 @@ export default (): TelegrafInlineMenu => {
     return channels.map((channel): string => channel.id.toString());
   };
 
-  menu.selectSubmenu(ActionCode.CHANNELS_SELECT, getChannelsNames, channelMenu(), {
-    textFunc: async (ctx, key): Promise<string> => {
+  menu.chooseIntoSubmenu(ActionCode.CHANNELS_SELECT, getChannelsNames, channelMenu(), {
+    buttonText: async (ctx, key): Promise<string> => {
       const { name } = await ctx.connection.manager.findOne(Channel, {
         id: parseInt(key, 10),
       });

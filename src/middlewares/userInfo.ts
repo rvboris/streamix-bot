@@ -1,11 +1,13 @@
-import { ContextMessageUpdate, Middleware } from 'telegraf';
+import { Middleware } from 'telegraf';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { User, Settings } from '../entites';
 import { UserStatus } from '../entites/User';
 
-export const userInfo = ({ defaultLanguage }: { defaultLanguage: string }): Middleware<ContextMessageUpdate> => async (
-  ctx: ContextMessageUpdate,
-  next: Function,
-): Promise<void> => {
+export const userInfo = ({
+  defaultLanguage,
+}: {
+  defaultLanguage: string;
+}): Middleware<ExtendedTelegrafContext> => async (ctx: ExtendedTelegrafContext, next: () => void): Promise<void> => {
   const userRepository = ctx.connection.getRepository(User);
   const telegramId = ctx.from.id.toString();
   const user = await userRepository.findOne({ telegramId });
@@ -31,5 +33,5 @@ export const userInfo = ({ defaultLanguage }: { defaultLanguage: string }): Midd
     ctx.user = user;
   }
 
-  next && next(ctx);
+  next && next();
 };

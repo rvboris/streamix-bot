@@ -1,19 +1,19 @@
-import TelegrafInlineMenu from 'telegraf-inline-menu';
-import botMenu from './bot';
-import { ContextMessageUpdate } from 'telegraf';
-import { ActionCode } from './ActionCode';
+import { ActionCode } from '../enums/ActionCode';
 import { Bot } from '../entites';
+import { botMenu } from './bot';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { MenuTemplate } from 'telegraf-inline-menu';
 
-export default (): TelegrafInlineMenu => {
-  const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.bots.title'));
+export const botsMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
+  const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.bots.title'));
 
-  const getBotsNames = async (ctx: ContextMessageUpdate): Promise<string[]> => {
+  const getBotsNames = async (ctx: ExtendedTelegrafContext): Promise<string[]> => {
     const userBots = await ctx.connection.manager.find(Bot, { user: ctx.user });
     return userBots.map((bot): string => bot.id.toString());
   };
 
-  menu.selectSubmenu(ActionCode.BOTS_SELECT, getBotsNames, botMenu(), {
-    textFunc: async (ctx, key): Promise<string> => {
+  menu.chooseIntoSubmenu(ActionCode.BOTS_SELECT, getBotsNames, botMenu(), {
+    buttonText: async (ctx, key): Promise<string> => {
       const bot = await ctx.connection.manager.findOne(Bot, {
         id: parseInt(key, 10),
         user: ctx.user,
@@ -23,13 +23,11 @@ export default (): TelegrafInlineMenu => {
     columns: 1,
   });
 
-  menu.simpleButton((ctx): string => ctx.i18n.t('menus.bots.howToAddBtn'), ActionCode.BOTS_ADD, {
-    doFunc: async (ctx): Promise<void> => {
+  menu.interact((ctx): string => ctx.i18n.t('menus.bots.howToAddBtn'), ActionCode.BOTS_ADD, {
+    do: async (ctx): Promise<void> => {
       await ctx.reply(ctx.i18n.t('menus.bots.howToAddText'));
     },
   });
-
-  menu.setCommand('bots');
 
   return menu;
 };

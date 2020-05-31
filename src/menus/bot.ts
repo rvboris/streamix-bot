@@ -1,11 +1,12 @@
-import TelegrafInlineMenu from 'telegraf-inline-menu';
-import { ActionCode } from './ActionCode';
-import { Bot, Settings, Channel } from '../entites';
-import channelsMenu from './channels';
 import logger from '../util/logger';
+import { ActionCode } from '../enums/ActionCode';
+import { Bot, Channel, Settings } from '../entites';
+import { channelsMenu } from './channels';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { MenuTemplate } from 'telegraf-inline-menu';
 
-export default (): TelegrafInlineMenu => {
-  const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.bot.title'));
+export const botMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
+  const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.bot.title'));
 
   menu.submenu((ctx): string => ctx.i18n.t('menus.bot.channelsBtn'), ActionCode.BOT_CHANNELS, channelsMenu(), {
     hide: async (ctx): Promise<boolean> => {
@@ -24,8 +25,8 @@ export default (): TelegrafInlineMenu => {
     },
   });
 
-  menu.button((ctx): string => ctx.i18n.t('menus.bot.deleteBtn'), ActionCode.BOT_DELETE, {
-    doFunc: async (ctx): Promise<void> => {
+  menu.interact((ctx): string => ctx.i18n.t('menus.bot.deleteBtn'), ActionCode.BOT_DELETE, {
+    do: async (ctx): Promise<string> => {
       try {
         const [, botId = ''] = ctx.match;
 
@@ -79,8 +80,9 @@ export default (): TelegrafInlineMenu => {
       }
 
       await ctx.reply(ctx.i18n.t('menus.bot.deleteSuccessText'));
+
+      return '.';
     },
-    setParentMenuAfter: true,
   });
 
   return menu;

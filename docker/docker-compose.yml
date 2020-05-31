@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+  streamix-bot-db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: development
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - 5432:5432

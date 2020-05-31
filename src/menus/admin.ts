@@ -1,12 +1,13 @@
-import TelegrafInlineMenu from 'telegraf-inline-menu';
-import { ActionCode } from './ActionCode';
+import { MenuTemplate } from 'telegraf-inline-menu';
+import { ActionCode } from '../enums/ActionCode';
 import { Source, Channel, User, Bot, Update } from '../entites';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 
-export default (): TelegrafInlineMenu => {
-  const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.admin.title'));
+export const adminMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
+  const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.admin.title'));
 
-  menu.simpleButton((ctx): string => ctx.i18n.t('menus.admin.statBtn'), ActionCode.ADMIN_STAT, {
-    doFunc: async (ctx): Promise<void> => {
+  menu.interact((ctx): string => ctx.i18n.t('menus.admin.statBtn'), ActionCode.ADMIN_STAT, {
+    do: async (ctx): Promise<void> => {
       if (!ctx.user.isAdmin) {
         return;
       }

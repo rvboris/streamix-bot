@@ -1,30 +1,30 @@
-import TelegrafInlineMenu from 'telegraf-inline-menu';
-import sourcesListMenu from './sourcesList';
-import { ContextMessageUpdate } from 'telegraf';
-import { ActionCode } from './ActionCode';
-import { Source, Settings, Channel } from '../entites';
+import { ActionCode } from '../enums/ActionCode';
+import { Channel, Settings, Source } from '../entites';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { MenuTemplate } from 'telegraf-inline-menu';
+import { sourcesListMenu } from './sourcesList';
 
-export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
-  const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.sources.title'));
+export const sourcesMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
+  const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.sources.title'));
 
-  const getChannelsNames = async (ctx: ContextMessageUpdate): Promise<string[]> => {
+  const getChannelsNames = async (ctx: ExtendedTelegrafContext): Promise<string[]> => {
     const userChannels = await ctx.connection.manager.find(Channel, { user: ctx.user });
     return userChannels.map(({ id }): string => id.toString());
   };
 
   menu.select(ActionCode.SOURCES_CHANNEL_SELECT, getChannelsNames, {
-    isSetFunc: async (ctx, key): Promise<boolean> => {
+    isSet: async (ctx, key): Promise<boolean> => {
       const settings = await ctx.connection.manager.findOne(Settings, { user: ctx.user });
       return settings.defaultChannel.id === parseInt(key, 10);
     },
-    setFunc: async (ctx, key): Promise<void> => {
+    set: async (ctx, key): Promise<void> => {
       const channel = await ctx.connection.manager.findOne(Channel, {
         id: parseInt(key, 10),
         user: ctx.user,
       });
       await ctx.connection.manager.update(Settings, { user: ctx.user }, { defaultChannel: channel });
     },
-    textFunc: async (ctx, key): Promise<string> => {
+    buttonText: async (ctx, key): Promise<string> => {
       const channel = await ctx.connection.manager.findOne(Channel, {
         id: parseInt(key, 10),
         user: ctx.user,
@@ -41,16 +41,14 @@ export default (ctx: ContextMessageUpdate): TelegrafInlineMenu => {
     columns: 1,
   });
 
-  const getListBtnText = async (ctx: ContextMessageUpdate): Promise<string> => {
+  const getListBtnText = async (ctx: ExtendedTelegrafContext): Promise<string> => {
     const settings = await ctx.connection.manager.findOne(Settings, { user: ctx.user });
     const channelName = settings.defaultChannel.name;
 
     return ctx.i18n.t('menus.sources.sourcesListBtn', { channelName });
   };
 
-  menu.submenu(getListBtnText, ActionCode.SOURCES_LIST, sourcesListMenu(ctx));
-
-  menu.setCommand('sources');
+  menu.submenu(getListBtnText, ActionCode.SOURCES_LIST, sourcesListMenu());
 
   return menu;
 };

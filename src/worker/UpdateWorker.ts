@@ -47,7 +47,7 @@ export class UpdateWorker {
     this._isStopped = true;
   }
 
-  private async _processInterval(iterationNumber: number, stop?: Function): Promise<void> {
+  private async _processInterval(iterationNumber: number, stop?: () => void): Promise<void> {
     if (this._isStopped && stop) {
       return stop();
     }

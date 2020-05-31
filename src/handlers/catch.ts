@@ -1,5 +1,5 @@
 import logger from '../util/logger';
 
-export const catchHandler = (): Function => (error: any): void => {
+export const catchHandler = () => (error: Error): void => {
   logger.error('telegraf error', { meta: error });
 };

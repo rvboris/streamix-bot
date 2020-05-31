@@ -1,13 +1,14 @@
-import TelegrafInlineMenu from 'telegraf-inline-menu';
 import logger from '../util/logger';
-import { ActionCode } from './ActionCode';
+import { ActionCode } from '../enums/ActionCode';
 import { Source } from '../entites';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { MenuTemplate } from 'telegraf-inline-menu';
 
-export default (): TelegrafInlineMenu => {
-  const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.source.title'));
+export const sourceMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
+  const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.source.title'));
 
-  menu.button((ctx): string => ctx.i18n.t('menus.source.deleteBtn'), ActionCode.SOURCE_DELETE, {
-    doFunc: async (ctx): Promise<void> => {
+  menu.interact((ctx): string => ctx.i18n.t('menus.source.deleteBtn'), ActionCode.SOURCE_DELETE, {
+    do: async (ctx): Promise<string> => {
       const [, sourceId] = ctx.match;
       try {
         await ctx.connection.manager.delete(Source, { id: sourceId });
@@ -18,8 +19,9 @@ export default (): TelegrafInlineMenu => {
       }
 
       await ctx.reply(ctx.i18n.t('menus.source.deleteSuccessText'));
+
+      return '.';
     },
-    setParentMenuAfter: true,
   });
 
   return menu;

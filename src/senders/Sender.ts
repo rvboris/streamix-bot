@@ -6,7 +6,7 @@ export class Sender {
   private _messageMaxLength = 4096;
   private _pauseBetweenMessages = 1;
 
-  protected _formatRecords(records): string[] {
+  protected _formatRecords(records: SourceRecord[]): string[] {
     return records.map((): string => '');
   }
 

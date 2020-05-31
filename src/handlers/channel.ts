@@ -1,11 +1,15 @@
 import getTelegram from '../util/getTelegram';
 import logger from '../util/logger';
 import { Bot, Channel, Settings } from '../entites';
-import { Middleware, ContextMessageUpdate } from 'telegraf';
-import { get } from 'lodash';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { filterAsync } from '../util/filterAsync';
+import { get } from 'lodash';
+import { Middleware } from 'telegraf';
 
-export const channelHandler = (): Middleware<ContextMessageUpdate> => async (ctx, next): Promise<void> => {
+export const channelHandler = (): Middleware<ExtendedTelegrafContext> => async (
+  ctx: ExtendedTelegrafContext,
+  next: () => void,
+): Promise<void> => {
   try {
     if (!get(ctx, 'message.forward_from_message_id', false)) {
       return next && next();

@@ -1,17 +1,16 @@
-import TelegrafInlineMenu from 'telegraf-inline-menu';
-import changeLanguageMenu from './language';
-import { ActionCode } from './ActionCode';
+import { languageMenu } from './language';
+import { ActionCode } from '../enums/ActionCode';
+import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { MenuTemplate } from 'telegraf-inline-menu';
 
-export default (): TelegrafInlineMenu => {
-  const menu = new TelegrafInlineMenu((ctx): string => ctx.i18n.t('menus.settings.title'));
+export const settingsMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
+  const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.settings.title'));
 
   menu.submenu(
     (ctx): string => ctx.i18n.t('menus.settings.changeLanguageBtn'),
     ActionCode.SETTINGS_LANGUAGE,
-    changeLanguageMenu(),
+    languageMenu(),
   );
-
-  menu.setCommand('settings');
 
   return menu;
 };
