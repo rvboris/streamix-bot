@@ -23,7 +23,7 @@ export class Bot {
   public user: User;
 
   @ManyToMany((): ObjectType<Channel> => Channel, (channel): Bot[] => channel.bots, {
-    cascade: true,
+    onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   })
   public channels: Channel[];

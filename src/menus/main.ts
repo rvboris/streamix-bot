@@ -4,6 +4,7 @@ import { Bot, Channel } from '../entites';
 import { botsMenu } from './bots';
 import { contactQuestion } from '../questions/contact';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { MenuMiddleware } from 'telegraf-inline-menu';
 import { MenuTemplate } from 'telegraf-inline-menu';
 import { settingsMenu } from './settings';
 import { sourcesMenu } from './sources';
@@ -19,6 +20,10 @@ export const mainMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   };
 
   const menu = new MenuTemplate<ExtendedTelegrafContext>(mainMenuTitle);
+
+  menu.submenu((ctx): string => ctx.i18n.t('menus.main.adminBtn'), ActionCode.MAIN_ADMIN, adminMenu(), {
+    hide: async (ctx): Promise<boolean> => !ctx.user.isAdmin,
+  });
 
   menu.select(ActionCode.MAIN_LANGUAGE, ['ru', 'en'], {
     set: async (ctx, key): Promise<void> => {
@@ -40,7 +45,26 @@ export const mainMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   });
 
   menu.submenu((ctx): string => ctx.i18n.t('menus.main.botsBtn'), ActionCode.MAIN_BOTS, botsMenu(), {
-    hide: (ctx): boolean => ctx.user.status === UserStatus.STARTED,
+    hide: async (ctx): Promise<boolean> => {
+      const isAnyBots = await ctx.connection.manager.count(Bot, {
+        user: ctx.user,
+      });
+
+      return !isAnyBots || ctx.user.status === UserStatus.STARTED;
+    },
+  });
+
+  menu.interact((ctx): string => ctx.i18n.t('menus.bots.howToAddBtn'), ActionCode.BOTS_ADD, {
+    do: async (ctx): Promise<void> => {
+      await ctx.reply(ctx.i18n.t('menus.bots.howToAddText'));
+    },
+    hide: async (ctx): Promise<boolean> => {
+      const isAnyBots = await ctx.connection.manager.count(Bot, {
+        user: ctx.user,
+      });
+
+      return !!isAnyBots || ctx.user.status === UserStatus.STARTED;
+    },
   });
 
   menu.submenu((ctx): string => ctx.i18n.t('menus.main.sourcesBtn'), ActionCode.MAIN_SOURCES, sourcesMenu(), {
@@ -53,18 +77,14 @@ export const mainMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
     },
   });
 
-  menu.submenu((ctx): string => ctx.i18n.t('menus.main.adminBtn'), ActionCode.MAIN_ADMIN, adminMenu(), {
-    hide: async (ctx): Promise<boolean> => !ctx.user.isAdmin,
-  });
-
   menu.interact((ctx): string => ctx.i18n.t('menus.main.howToAddChannelBtn'), ActionCode.MAIN_ADD_CHANNEL, {
     do: async (ctx): Promise<void> => {
       await ctx.reply(ctx.i18n.t('menus.main.howToAddChannelText'));
     },
     hide: async (ctx): Promise<boolean> => {
-      const isAnyBots = await ctx.connection.manager.count(Bot, { user: ctx.user });
+      const isAnyChannels = await ctx.connection.manager.count(Channel, { user: ctx.user });
 
-      return ctx.user.status === UserStatus.STARTED || !isAnyBots;
+      return ctx.user.status === UserStatus.STARTED && !isAnyChannels;
     },
   });
 
@@ -85,3 +105,5 @@ export const mainMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
 
   return menu;
 };
+
+export const mainMenuMiddleware = new MenuMiddleware('/', mainMenu());

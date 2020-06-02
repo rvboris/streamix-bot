@@ -1,8 +1,8 @@
-import logger from '../util/logger';
+import { logger } from '../util/logger';
 import { ActionCode } from '../enums/ActionCode';
 import { Source } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { MenuTemplate } from 'telegraf-inline-menu';
+import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
 
 export const sourceMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.source.title'));
@@ -14,15 +14,22 @@ export const sourceMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
         await ctx.connection.manager.delete(Source, { id: sourceId });
       } catch (e) {
         logger.error(e.stack, { ctx });
-        await ctx.reply(ctx.i18n.t('menus.source.deleteFailText'));
+        await ctx.answerCbQuery(ctx.i18n.t('menus.source.deleteFailText'));
         return;
       }
 
-      await ctx.reply(ctx.i18n.t('menus.source.deleteSuccessText'));
+      await ctx.answerCbQuery(ctx.i18n.t('menus.source.deleteSuccessText'));
 
-      return '.';
+      return '..';
     },
   });
+
+  menu.manualRow(
+    createBackMainMenuButtons<ExtendedTelegrafContext>(
+      (ctx) => ctx.i18n.t('shared.backBtn'),
+      (ctx) => ctx.i18n.t('shared.backToMainBtn'),
+    ),
+  );
 
   return menu;
 };

@@ -9,7 +9,7 @@ export const userInfo = ({
   defaultLanguage: string;
 }): Middleware<ExtendedTelegrafContext> => async (ctx: ExtendedTelegrafContext, next: () => void): Promise<void> => {
   const userRepository = ctx.connection.getRepository(User);
-  const telegramId = ctx.from.id.toString();
+  const telegramId = `${ctx.from.id}`;
   const user = await userRepository.findOne({ telegramId });
 
   if (user) {

@@ -1,10 +1,10 @@
-export { adminMenu } from './admin';
+export { adminMenu, adminMenuMiddleware } from './admin';
 export { botMenu } from './bot';
 export { botsMenu } from './bots';
 export { channelMenu } from './channel';
 export { channelsMenu } from './channels';
 export { languageMenu } from './language';
-export { mainMenu } from './main';
+export { mainMenu, mainMenuMiddleware } from './main';
 export { settingsMenu } from './settings';
 export { sourceMenu } from './source';
 export { sourcesMenu } from './sources';

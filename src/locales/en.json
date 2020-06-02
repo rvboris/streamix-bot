@@ -26,6 +26,7 @@
       "howToAddBtn": "❓How to add bot",
       "howToAddText": "To add bot forward message within bot token from @BotFather",
       "addFailText": "❌ Error, bot not added",
+      "addFailAlreadyExistsText": "❌ Error, bot ${botName} already added",
       "addSuccessText": "✅ Bot ${botName} is added, now you can add channels and sources"
     },
     "bot": {
@@ -64,6 +65,9 @@
       "title": "Manage channel",
       "deleteBtn": "🗑 Delete channel",
       "addSuccessText": "✅ Channel name ${channelName} added",
+      "addFailAdminBotText": "❌ Error, your bots don't have administration rights in ${channelName} channel",
+      "addFailAlreadyExistsText": "❌ Error, channel ${channelName} already added",
+      "addFailNoBotsText": "❌ Error, at first you need to add at least one bot",
       "addFailText": "❌ Error, channel not added",
       "deleteSuccessText": "✅ Channel deleted",
       "deleteFailText": "❌ Error, channel not deleted"
@@ -76,6 +80,6 @@
   },
   "shared": {
     "backBtn": "◀️ Back",
-    "backToMainBtn": "Back to main menu"
+    "backToMainBtn": "Main menu"
   }
 }

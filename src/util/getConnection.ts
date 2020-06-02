@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { createConnection, Connection } from 'typeorm';
 import { User, Settings, Bot, Source, Channel, Update } from '../entites';
 
-export default async (): Promise<Connection> =>
+export const getConnection = async (): Promise<Connection> =>
   createConnection({
     type: 'postgres',
     host: process.env.DB_HOST,

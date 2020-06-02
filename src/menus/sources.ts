@@ -1,7 +1,7 @@
 import { ActionCode } from '../enums/ActionCode';
 import { Channel, Settings, Source } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { MenuTemplate } from 'telegraf-inline-menu';
+import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
 import { sourcesListMenu } from './sourcesList';
 
 export const sourcesMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
@@ -9,7 +9,7 @@ export const sourcesMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
 
   const getChannelsNames = async (ctx: ExtendedTelegrafContext): Promise<string[]> => {
     const userChannels = await ctx.connection.manager.find(Channel, { user: ctx.user });
-    return userChannels.map(({ id }): string => id.toString());
+    return userChannels.map(({ id }): string => `${id}`);
   };
 
   menu.select(ActionCode.SOURCES_CHANNEL_SELECT, getChannelsNames, {
@@ -22,6 +22,7 @@ export const sourcesMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
         id: parseInt(key, 10),
         user: ctx.user,
       });
+
       await ctx.connection.manager.update(Settings, { user: ctx.user }, { defaultChannel: channel });
     },
     buttonText: async (ctx, key): Promise<string> => {
@@ -29,10 +30,12 @@ export const sourcesMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
         id: parseInt(key, 10),
         user: ctx.user,
       });
+
       const sourcesCount = await ctx.connection.manager.count(Source, {
         user: ctx.user,
         channel,
       });
+
       return ctx.i18n.t('menus.sources.channelSelectBtn', {
         sources: sourcesCount,
         channelName: channel.name,
@@ -49,6 +52,19 @@ export const sourcesMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   };
 
   menu.submenu(getListBtnText, ActionCode.SOURCES_LIST, sourcesListMenu());
+
+  menu.interact((ctx): string => ctx.i18n.t('menus.main.howToAddChannelBtn'), ActionCode.MAIN_ADD_CHANNEL, {
+    do: async (ctx): Promise<void> => {
+      await ctx.reply(ctx.i18n.t('menus.main.howToAddChannelText'));
+    },
+  });
+
+  menu.manualRow(
+    createBackMainMenuButtons<ExtendedTelegrafContext>(
+      (ctx) => ctx.i18n.t('shared.backBtn'),
+      (ctx) => ctx.i18n.t('shared.backToMainBtn'),
+    ),
+  );
 
   return menu;
 };

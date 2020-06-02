@@ -1,12 +1,16 @@
 import getUrls from 'get-urls';
-import logger from '../util/logger';
 import TelegrafStatelessQuestion from 'telegraf-stateless-question';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { logger, getMenuPath } from '../util';
+import { mainMenuMiddleware } from '../menus';
 import { QuestionCode } from '../enums/QuestionCode';
+import { ActionCode } from '../enums/ActionCode';
 import { RssParser } from '../parsers/RssParser';
 import { Source } from '../entites';
 import { SourceType } from '../entites/Source';
 import { subDays } from 'date-fns';
+
+const ADD_RSS_PATH = getMenuPath(ActionCode.MAIN_SOURCES, ActionCode.SOURCES_LIST);
 
 export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafContext>(
   QuestionCode.ADD_RSS,
@@ -16,6 +20,7 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
 
     if (!text) {
       await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssFailText'));
+      await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
       return;
     }
 
@@ -24,6 +29,7 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
 
       if (!urls.size) {
         await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceUrl'));
+        await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
         return;
       }
 
@@ -35,6 +41,7 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
 
       if (sourceName.length < 3 || sourceName.length > 32) {
         await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceName', { sourceName }));
+        await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
         return;
       }
 
@@ -51,6 +58,7 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
             disable_web_page_preview: true,
           } as any,
         );
+        await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
 
         return;
       }
@@ -69,9 +77,11 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
     } catch (e) {
       logger.error(e.stack, { ctx });
       await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssFailText'));
+      await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
       return;
     }
 
     await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssSuccessText'));
+    await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
   },
 );

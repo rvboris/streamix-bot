@@ -1,4 +1,4 @@
-import logger from '../util/logger';
+import { logger } from '../util/logger';
 import { ActionCode } from '../enums/ActionCode';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { MenuTemplate } from 'telegraf-inline-menu';

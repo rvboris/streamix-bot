@@ -1,9 +1,9 @@
-import logger from '../util/logger';
+import { logger } from '../util/logger';
 import { ActionCode } from '../enums/ActionCode';
 import { Bot, Channel, Settings } from '../entites';
 import { channelsMenu } from './channels';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { MenuTemplate } from 'telegraf-inline-menu';
+import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
 
 export const botMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.bot.title'));
@@ -32,7 +32,7 @@ export const botMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
 
         ctx.connection.manager.transaction(
           async (transactionalEntityManager): Promise<void> => {
-            const botToDelete = await transactionalEntityManager.findOne(
+            const botToDelete = await transactionalEntityManager.findOne<Bot>(
               Bot,
               { user: ctx.user, id: parseInt(botId, 10) },
               { relations: ['channels'] },
@@ -43,7 +43,8 @@ export const botMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
               { user: ctx.user },
               { defaultBot: null, defaultChannel: null },
             );
-            await transactionalEntityManager.delete(Bot, botToDelete);
+
+            await transactionalEntityManager.delete(Bot, { id: botToDelete.id });
 
             for (const channel of botToDelete.channels) {
               const { bots } = await transactionalEntityManager.findOne(
@@ -75,15 +76,22 @@ export const botMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
         );
       } catch (e) {
         logger.error(e.stack, { ctx });
-        await ctx.reply(ctx.i18n.t('menus.bot.deleteFailText'));
+        await ctx.answerCbQuery(ctx.i18n.t('menus.bot.deleteFailText'));
         return;
       }
 
-      await ctx.reply(ctx.i18n.t('menus.bot.deleteSuccessText'));
+      await ctx.answerCbQuery(ctx.i18n.t('menus.bot.deleteSuccessText'));
 
-      return '.';
+      return '..';
     },
   });
+
+  menu.manualRow(
+    createBackMainMenuButtons<ExtendedTelegrafContext>(
+      (ctx) => ctx.i18n.t('shared.backBtn'),
+      (ctx) => ctx.i18n.t('shared.backToMainBtn'),
+    ),
+  );
 
   return menu;
 };

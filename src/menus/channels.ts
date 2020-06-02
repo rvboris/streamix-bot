@@ -2,7 +2,7 @@ import { channelMenu } from './channel';
 import { ActionCode } from '../enums/ActionCode';
 import { Channel } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { MenuTemplate } from 'telegraf-inline-menu';
+import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
 
 export const channelsMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.channels.title'));
@@ -20,7 +20,7 @@ export const channelsMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
       .where('bot.id = ANY(:botId)', { botId: [parseInt(botId, 10)] })
       .getMany();
 
-    return channels.map((channel): string => channel.id.toString());
+    return channels.map((channel): string => `${channel.id}`);
   };
 
   menu.chooseIntoSubmenu(ActionCode.CHANNELS_SELECT, getChannelsNames, channelMenu(), {
@@ -32,6 +32,13 @@ export const channelsMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
     },
     columns: 1,
   });
+
+  menu.manualRow(
+    createBackMainMenuButtons<ExtendedTelegrafContext>(
+      (ctx) => ctx.i18n.t('shared.backBtn'),
+      (ctx) => ctx.i18n.t('shared.backToMainBtn'),
+    ),
+  );
 
   return menu;
 };

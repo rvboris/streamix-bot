@@ -1,8 +1,8 @@
-import logger from '../util/logger';
+import { logger } from '../util/logger';
 import { ActionCode } from '../enums/ActionCode';
 import { Channel, Settings } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { MenuTemplate } from 'telegraf-inline-menu';
+import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
 
 export const channelMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.channel.title'));
@@ -14,7 +14,7 @@ export const channelMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
 
         ctx.connection.manager.transaction(
           async (transactionalEntityManager): Promise<void> => {
-            if (ctx.user.settings.defaultChannel.id.toString() === channelId) {
+            if (`${ctx.user.settings.defaultChannel.id}` === channelId) {
               await transactionalEntityManager.update(Settings, { user: ctx.user }, { defaultChannel: null });
             }
 
@@ -31,15 +31,22 @@ export const channelMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
         );
       } catch (e) {
         logger.error(e.stack, { ctx });
-        await ctx.reply(ctx.i18n.t('menus.channel.deleteFailText'));
+        await ctx.answerCbQuery(ctx.i18n.t('menus.channel.deleteFailText'));
         return;
       }
 
-      await ctx.reply(ctx.i18n.t('menus.channel.deleteSuccessText'));
+      await ctx.answerCbQuery(ctx.i18n.t('menus.channel.deleteSuccessText'));
 
-      return '.';
+      return '..';
     },
   });
+
+  menu.manualRow(
+    createBackMainMenuButtons<ExtendedTelegrafContext>(
+      (ctx) => ctx.i18n.t('shared.backBtn'),
+      (ctx) => ctx.i18n.t('shared.backToMainBtn'),
+    ),
+  );
 
   return menu;
 };

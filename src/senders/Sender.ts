@@ -1,4 +1,4 @@
-import getTelegram from '../util/getTelegram';
+import { getTelegram } from '../util/getTelegram';
 import { SourceRecord } from '../parsers/SourceRecord';
 import { Bot, Channel } from '../entites';
 

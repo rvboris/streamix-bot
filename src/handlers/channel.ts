@@ -1,9 +1,10 @@
-import getTelegram from '../util/getTelegram';
-import logger from '../util/logger';
 import { Bot, Channel, Settings } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { filterAsync } from '../util/filterAsync';
 import { get } from 'lodash';
+import { getTelegram } from '../util/getTelegram';
+import { logger } from '../util/logger';
+import { mainMenuMiddleware } from '../menus';
 import { Middleware } from 'telegraf';
 
 export const channelHandler = (): Middleware<ExtendedTelegrafContext> => async (
@@ -12,19 +13,20 @@ export const channelHandler = (): Middleware<ExtendedTelegrafContext> => async (
 ): Promise<void> => {
   try {
     if (!get(ctx, 'message.forward_from_message_id', false)) {
-      return next && next();
+      return next();
     }
 
     const { id: channelId, title: channelTitle, username: channelUsername } = get(ctx, 'message.forward_from_chat', {});
 
     if (!channelId || !channelTitle) {
-      return next && next();
+      return next();
     }
 
     const userBots = await ctx.connection.manager.find(Bot, { user: ctx.user });
 
     if (!userBots.length) {
-      return;
+      ctx.reply(ctx.i18n.t('menus.channel.addFailNoBotsText', { channelName: channelTitle }));
+      return next();
     }
 
     const adminBots = await filterAsync<Bot>(
@@ -33,33 +35,36 @@ export const channelHandler = (): Middleware<ExtendedTelegrafContext> => async (
         try {
           const chatMembers = await getTelegram(bot.token).getChatAdministrators(channelId);
           const adminBot = chatMembers.find(({ user }): boolean => {
-            return user.is_bot && user.id.toString() === bot.telegramId;
+            return user.is_bot && `${user.id}` === bot.telegramId;
           });
 
           return !!adminBot;
         } catch (e) {
+          logger.error(e.stack, { ctx });
           return false;
         }
       },
     );
 
     if (!adminBots.length) {
-      return;
+      ctx.reply(ctx.i18n.t('menus.channel.addFailAdminBotText', { channelName: channelTitle }));
+      return next();
     }
 
     const channel = await ctx.connection.manager.findOne(Channel, {
-      telegramId: channelId.toString(),
+      telegramId: `${channelId}`,
     });
 
     if (channel) {
-      return;
+      ctx.reply(ctx.i18n.t('menus.channel.addFailAlreadyExistsText', { channelName: channelTitle }));
+      return next();
     }
 
     await ctx.connection.manager.transaction(
       async (transactionalEntityManager): Promise<void> => {
         const newChannel = new Channel();
 
-        newChannel.telegramId = channelId.toString();
+        newChannel.telegramId = `${channelId}`;
 
         if (channelUsername) {
           newChannel.username = channelUsername;
@@ -75,10 +80,11 @@ export const channelHandler = (): Middleware<ExtendedTelegrafContext> => async (
     );
 
     ctx.reply(ctx.i18n.t('menus.channel.addSuccessText', { channelName: channelTitle }));
+    await mainMenuMiddleware.replyToContext(ctx, '/');
   } catch (e) {
     ctx.i18n.t('menus.channel.addFailText');
-    logger.error(e.stack);
+    logger.error(e.stack, { ctx });
   }
 
-  return next && next();
+  return next();
 };

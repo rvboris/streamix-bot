@@ -1,15 +1,15 @@
 import interval from 'interval-promise';
 import pLimit, { Limit } from 'p-limit';
-import logger from '../util/logger';
+import { Channel, Source, SourceType, User } from '../entites';
 import { Connection } from 'typeorm';
-import { User, Source, Channel, SourceType } from '../entites';
+import { logger } from '../util/logger';
 import { Logger } from 'winston';
 import { MappedSourceRecords } from './MappedSourceRecords';
-import { SourceRecord } from '../parsers/SourceRecord';
-import { Record } from '../parsers/Record';
-import { UpdateManager } from './UpdateManager';
 import { mapRecordsToSource } from '../util/mapRecordsToSource';
 import { mapSourceRecordToRecord } from '../util/mapSourceRecordToRecord';
+import { Record } from '../parsers/Record';
+import { SourceRecord } from '../parsers/SourceRecord';
+import { UpdateManager } from './UpdateManager';
 
 const DEFAULT_INTERVAL = 15 * 60 * 1000;
 const USERS_PER_QUERY = 10;
@@ -34,8 +34,6 @@ export class UpdateWorker {
     this._usersIterationConcurrent = pLimit(USERS_PER_QUERY);
     this._sourcesConcurrent = pLimit(3);
     this._sendingConcurrent = pLimit(3);
-
-    this._log.info(`start bot in ${process.env.NODE_ENV} mode`);
   }
 
   public async start(): Promise<void> {

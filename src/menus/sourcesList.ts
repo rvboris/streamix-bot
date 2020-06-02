@@ -2,7 +2,7 @@ import { sourceMenu } from './source';
 import { ActionCode } from '../enums/ActionCode';
 import { addRssQuestion } from '../questions/add-rss';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { MenuTemplate } from 'telegraf-inline-menu';
+import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
 import { Settings, Source } from '../entites';
 import { SourceType } from '../entites/Source';
 
@@ -23,7 +23,7 @@ export const sourcesListMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
       channel: settings.defaultChannel,
     });
 
-    return userSources ? userSources.map((source): string => source.id.toString()) : [];
+    return userSources ? userSources.map(({ id }): string => `${id}`) : [];
   };
 
   menu.chooseIntoSubmenu(ActionCode.SOURCES_LIST_SELECT, getSourcesNames, sourceMenu(), {
@@ -32,6 +32,7 @@ export const sourcesListMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
         id: parseInt(key, 10),
         user: ctx.user,
       });
+
       return ctx.i18n.t('menus.sourcesList.sourceSelectBtn', {
         sourceName: source.name,
         sourceType: SourceType[source.type],
@@ -45,6 +46,13 @@ export const sourcesListMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
       await addRssQuestion.replyWithMarkdown(ctx, ctx.i18n.t('menus.sourcesList.addRssQuestion'));
     },
   });
+
+  menu.manualRow(
+    createBackMainMenuButtons<ExtendedTelegrafContext>(
+      (ctx) => ctx.i18n.t('shared.backBtn'),
+      (ctx) => ctx.i18n.t('shared.backToMainBtn'),
+    ),
+  );
 
   return menu;
 };

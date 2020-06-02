@@ -29,7 +29,7 @@ const logFormat = printf((info): string => {
 
 const currentLevel = process.env.NODE_ENV === 'production' ? 'info' : 'debug';
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   exitOnError: false,
   transports: [
     new winston.transports.Console({
@@ -43,5 +43,3 @@ const logger = winston.createLogger({
 if (process.env.NODE_ENV !== 'production') {
   logger.debug(`logging initialized at ${currentLevel} level`);
 }
-
-export default logger;

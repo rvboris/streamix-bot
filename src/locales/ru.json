@@ -26,6 +26,7 @@
       "howToAddBtn": "❓Как добавить бота",
       "howToAddText": "Чтобы добавить бота перешлите сообщение содержащее его токен от @BotFather",
       "addFailText": "❌ Ошибка, бот не добавлен",
+      "addFailAlreadyExistsText": "❌ Ошибка, бот ${botName} уже добавлен",
       "addSuccessText": "✅ Бот ${botName} добавлен, теперь можно добавить источники и каналы"
     },
     "bot": {
@@ -64,6 +65,9 @@
       "title": "Управление каналами",
       "deleteBtn": "✅ Удалить канал",
       "addSuccessText": "Канал ${channelName} добавлен",
+      "addFailAdminBotText": "❌ Ошибка, ни один из ваших ботов не является администратором ${channelName} канала",
+      "addFailAlreadyExistsText": "❌ Ошибка, канал ${channelName} уже добавлен",
+      "addFailNoBotsText": "❌ Ошибка, вначале вам нужно добавить хотя бы одного бота",
       "addFailText": "❌ Ошибка, канал не добавлен",
       "deleteSuccessText": "✅ Канал удален",
       "deleteFailText": "❌ Ошибка, канал не удален"
