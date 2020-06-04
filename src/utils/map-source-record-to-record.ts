@@ -1,5 +1,5 @@
-import { SourceRecord } from '../parsers/SourceRecord';
-import { Record } from '../parsers/Record';
+import { SourceRecord } from '../types/source-record';
+import { Record } from '../types/record';
 
 export const mapSourceRecordToRecord = (source: SourceRecord[]): Record[] => {
   return source.map((sourceRecord) => {

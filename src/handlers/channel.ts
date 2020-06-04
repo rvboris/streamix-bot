@@ -1,9 +1,9 @@
 import { Bot, Channel, Settings } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { filterAsync } from '../util/filterAsync';
+import { filterAsync } from '../utils/filter-async';
 import { get } from 'lodash';
-import { getTelegram } from '../util/getTelegram';
-import { logger } from '../util/logger';
+import { getTelegram } from '../utils/get-telegram';
+import { logger } from '../utils/logger';
 import { mainMenuMiddleware } from '../menus';
 import { Middleware } from 'telegraf';
 

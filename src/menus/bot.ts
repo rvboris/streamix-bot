@@ -1,12 +1,19 @@
-import { logger } from '../util/logger';
-import { ActionCode } from '../enums/ActionCode';
+import { logger } from '../utils/logger';
+import { ActionCode } from '../enums/action-code';
 import { Bot, Channel, Settings } from '../entites';
 import { channelsMenu } from './channels';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
 
 export const botMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
-  const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.bot.title'));
+  const getMenuTitle = async (ctx: ExtendedTelegrafContext): Promise<string> => {
+    const [, botId = ''] = ctx.match;
+    const bot = await ctx.connection.manager.findOne(Bot, { id: parseInt(botId, 10) });
+
+    return ctx.i18n.t('menus.bot.title', { botName: bot.username });
+  };
+
+  const menu = new MenuTemplate<ExtendedTelegrafContext>(getMenuTitle);
 
   menu.submenu((ctx): string => ctx.i18n.t('menus.bot.channelsBtn'), ActionCode.BOT_CHANNELS, channelsMenu(), {
     hide: async (ctx): Promise<boolean> => {

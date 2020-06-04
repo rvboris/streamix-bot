@@ -1,5 +1,5 @@
-import { getTelegram } from '../util/getTelegram';
-import { SourceRecord } from '../parsers/SourceRecord';
+import { getTelegram } from '../utils/get-telegram';
+import { SourceRecord } from '../types/source-record';
 import { Bot, Channel } from '../entites';
 
 export class Sender {

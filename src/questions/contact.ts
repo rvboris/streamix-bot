@@ -1,7 +1,7 @@
-import { getTelegram } from '../util/getTelegram';
+import { getTelegram } from '../utils/get-telegram';
 import TelegrafStatelessQuestion from 'telegraf-stateless-question';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { QuestionCode } from '../enums/QuestionCode';
+import { QuestionCode } from '../enums/question-code';
 import { mainMenuMiddleware } from '../menus';
 
 export const contactQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafContext>(
@@ -12,8 +12,8 @@ export const contactQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCon
     const { text } = message;
 
     if (!text) {
-      await ctx.reply(ctx.i18n.t('menus.main.contactFailText'));
       await mainMenuMiddleware.replyToContext(ctx);
+      await ctx.reply(ctx.i18n.t('menus.main.contactFailText'));
       return;
     }
 
@@ -29,7 +29,7 @@ export const contactQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCon
       parse_mode: 'Markdown',
     });
 
-    await ctx.reply(ctx.i18n.t('menus.main.contactSuccessText'));
     await mainMenuMiddleware.replyToContext(ctx);
+    await ctx.reply(ctx.i18n.t('menus.main.contactSuccessText'));
   },
 );

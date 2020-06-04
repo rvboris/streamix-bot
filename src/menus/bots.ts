@@ -1,4 +1,4 @@
-import { ActionCode } from '../enums/ActionCode';
+import { ActionCode } from '../enums/action-code';
 import { Bot } from '../entites';
 import { botMenu } from './bot';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
@@ -22,12 +22,6 @@ export const botsMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
       return ctx.i18n.t('menus.bots.selectBtn', { botName: bot.username });
     },
     columns: 1,
-  });
-
-  menu.interact((ctx): string => ctx.i18n.t('menus.bots.howToAddBtn'), ActionCode.BOTS_ADD, {
-    do: async (ctx): Promise<void> => {
-      await ctx.reply(ctx.i18n.t('menus.bots.howToAddText'));
-    },
   });
 
   menu.manualRow(

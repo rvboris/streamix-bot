@@ -1,5 +1,5 @@
-import { Parser } from './Parser';
-import { RssParser } from './RssParser';
+import { Parser } from './parser';
+import { RssParser } from './rss-parser';
 import { SourceType } from '../entites';
 
 export class ParserFactory {

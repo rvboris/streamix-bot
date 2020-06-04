@@ -4,16 +4,13 @@
       "title": "Main menu",
       "settingsBtn": "⚙️ Settings",
       "helpBtn": "💬 Help",
-      "helpText": "Help will be here very soon...",
       "contactBtn": "✍️ Contact",
       "contactQuestion": "🤔 Here you can leave a message for the Author of this bot. Please try to try to express your minds fully within one message.",
       "contactFailText": "❌ Your message not sent. Use only text please.",
       "contactSuccessText": "📬 Your message has been delivered, thank you!",
       "botsBtn": "Manage bots",
       "adminBtn": "Admin panel",
-      "sourcesBtn": "Manage sources",
-      "howToAddChannelBtn": "❓How to add channel",
-      "howToAddChannelText": "To add channel forward any message from it to this chat.\n\nBot will added if one of your bots is admin where.\n\nSupports public and private channels."
+      "sourcesBtn": "Manage sources"
     },
     "settings": {
       "title": "⚙️ Settings",
@@ -23,14 +20,12 @@
     "bots": {
       "title": "Manage bots",
       "selectBtn": "${botName}",
-      "howToAddBtn": "❓How to add bot",
-      "howToAddText": "To add bot forward message within bot token from @BotFather",
       "addFailText": "❌ Error, bot not added",
       "addFailAlreadyExistsText": "❌ Error, bot ${botName} already added",
       "addSuccessText": "✅ Bot ${botName} is added, now you can add channels and sources"
     },
     "bot": {
-      "title": "Manage bot",
+      "title": "Manage bot ${botName}",
       "deleteBtn": "🗑 Delete bot",
       "deleteSuccessText": "✅ Bot deleted",
       "deleteFailText": "❌ Error, bot not deleted",
@@ -71,6 +66,13 @@
       "addFailText": "❌ Error, channel not added",
       "deleteSuccessText": "✅ Channel deleted",
       "deleteFailText": "❌ Error, channel not deleted"
+    },
+    "help": {
+      "title": "Help",
+      "howToAddChannelBtn": "❓How to add channel",
+      "howToAddChannelText": "To add channel forward any message from it to this chat.\n\nBot will added if one of your bots is admin where.\n\nSupports public and private channels.",
+      "howToAddBotBtn": "❓How to add bot",
+      "howToAddBotText": "To add bot forward message within bot token from @BotFather"
     },
     "admin": {
       "title": "Admin panel",

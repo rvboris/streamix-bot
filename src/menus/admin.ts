@@ -1,5 +1,5 @@
 import { MenuTemplate, createBackMainMenuButtons, MenuMiddleware } from 'telegraf-inline-menu';
-import { ActionCode } from '../enums/ActionCode';
+import { ActionCode } from '../enums/action-code';
 import { Source, Channel, User, Bot, Update } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 

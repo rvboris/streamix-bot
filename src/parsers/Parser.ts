@@ -1,4 +1,4 @@
-import { SourceRecord } from './SourceRecord';
+import { SourceRecord } from '../types/source-record';
 import { Source } from '../entites';
 
 export interface Parser {

@@ -1,6 +1,6 @@
-export { Settings } from './Settings';
-export { User } from './User';
-export { Bot } from './Bot';
-export { Source, SourceType } from './Source';
-export { Channel } from './Channel';
-export { Update } from './Update';
+export { Settings } from './settings';
+export { User } from './user';
+export { Bot } from './bot';
+export { Source, SourceType } from './source';
+export { Channel } from './channel';
+export { Update } from './update';

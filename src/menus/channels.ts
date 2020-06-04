@@ -1,5 +1,5 @@
 import { channelMenu } from './channel';
-import { ActionCode } from '../enums/ActionCode';
+import { ActionCode } from '../enums/action-code';
 import { Channel } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';

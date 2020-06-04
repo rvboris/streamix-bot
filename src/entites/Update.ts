@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ObjectType, ManyToOne } from 'typeorm';
-import { Source } from './Source';
+import { Source } from './source';
 
 @Entity()
 export class Update {

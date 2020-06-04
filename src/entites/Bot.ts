@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ObjectType, JoinColumn, ManyToMany } from 'typeorm';
-import { User } from './User';
-import { Channel } from './Channel';
-import { SourceRecord } from '../parsers/SourceRecord';
-import { SenderFactory } from '../senders/SenderFactory';
+import { User } from './user';
+import { Channel } from './channel';
+import { SourceRecord } from '../types/source-record';
+import { SenderFactory } from '../senders/sender-factory';
 
 @Entity()
 export class Bot {

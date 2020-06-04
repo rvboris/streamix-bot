@@ -1,8 +1,8 @@
-import { logger } from '../util/logger';
-import { ActionCode } from '../enums/ActionCode';
+import { ActionCode } from '../enums/action-code';
+import { createBackMainMenuButtons, MenuTemplate } from 'telegraf-inline-menu';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { MenuTemplate } from 'telegraf-inline-menu';
-import { Settings } from '../entites/Settings';
+import { logger } from '../utils/logger';
+import { Settings } from '../entites/settings';
 
 export const languageMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.settings.title'));
@@ -21,6 +21,13 @@ export const languageMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
     },
     isSet: (ctx, key): boolean => key === ctx.user.settings.language,
   });
+
+  menu.manualRow(
+    createBackMainMenuButtons<ExtendedTelegrafContext>(
+      (ctx) => ctx.i18n.t('shared.backBtn'),
+      (ctx) => ctx.i18n.t('shared.backToMainBtn'),
+    ),
+  );
 
   return menu;
 };

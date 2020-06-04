@@ -1,14 +1,15 @@
-import { ActionCode } from '../enums/ActionCode';
+import { ActionCode } from '../enums/action-code';
 import { adminMenu } from './admin';
 import { Bot, Channel } from '../entites';
 import { botsMenu } from './bots';
 import { contactQuestion } from '../questions/contact';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
+import { helpMenu } from './help';
 import { MenuMiddleware } from 'telegraf-inline-menu';
 import { MenuTemplate } from 'telegraf-inline-menu';
 import { settingsMenu } from './settings';
 import { sourcesMenu } from './sources';
-import { UserStatus } from '../entites/User';
+import { UserStatus } from '../entites/user';
 
 export const mainMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   const mainMenuTitle = (ctx): string => {
@@ -54,19 +55,6 @@ export const mainMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
     },
   });
 
-  menu.interact((ctx): string => ctx.i18n.t('menus.bots.howToAddBtn'), ActionCode.BOTS_ADD, {
-    do: async (ctx): Promise<void> => {
-      await ctx.reply(ctx.i18n.t('menus.bots.howToAddText'));
-    },
-    hide: async (ctx): Promise<boolean> => {
-      const isAnyBots = await ctx.connection.manager.count(Bot, {
-        user: ctx.user,
-      });
-
-      return !!isAnyBots || ctx.user.status === UserStatus.STARTED;
-    },
-  });
-
   menu.submenu((ctx): string => ctx.i18n.t('menus.main.sourcesBtn'), ActionCode.MAIN_SOURCES, sourcesMenu(), {
     hide: async (ctx): Promise<boolean> => {
       const isAnyChannels = await ctx.connection.manager.count(Channel, {
@@ -77,25 +65,7 @@ export const mainMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
     },
   });
 
-  menu.interact((ctx): string => ctx.i18n.t('menus.main.howToAddChannelBtn'), ActionCode.MAIN_ADD_CHANNEL, {
-    do: async (ctx): Promise<void> => {
-      await ctx.reply(ctx.i18n.t('menus.main.howToAddChannelText'));
-    },
-    hide: async (ctx): Promise<boolean> => {
-      const isAnyChannels = await ctx.connection.manager.count(Channel, { user: ctx.user });
-
-      return ctx.user.status === UserStatus.STARTED && !isAnyChannels;
-    },
-  });
-
-  menu.interact((ctx): string => ctx.i18n.t('menus.main.helpBtn'), ActionCode.MAIN_HELP, {
-    do: async (ctx): Promise<void> => {
-      await ctx.reply(ctx.i18n.t('menus.main.helpText'), {
-        disable_web_page_preview: true,
-      } as any);
-    },
-    hide: (ctx): boolean => ctx.user.status === UserStatus.STARTED,
-  });
+  menu.submenu((ctx): string => ctx.i18n.t('menus.main.helpBtn'), ActionCode.MAIN_HELP, helpMenu());
 
   menu.interact((ctx): string => ctx.i18n.t('menus.main.contactBtn'), ActionCode.MAIN_CONTACT, {
     do: async (ctx): Promise<void> => {

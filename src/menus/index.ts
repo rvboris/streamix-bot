@@ -8,4 +8,5 @@ export { mainMenu, mainMenuMiddleware } from './main';
 export { settingsMenu } from './settings';
 export { sourceMenu } from './source';
 export { sourcesMenu } from './sources';
-export { sourcesListMenu } from './sourcesList';
+export { sourcesListMenu } from './sources-list';
+export { helpMenu, helpMenuMiddleware } from './help';

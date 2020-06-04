@@ -1,16 +1,23 @@
 import getUrls from 'get-urls';
 import TelegrafStatelessQuestion from 'telegraf-stateless-question';
+import { ActionCode } from '../enums/action-code';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
-import { logger, getMenuPath } from '../util';
+import { getMenuPath, logger } from '../utils';
 import { mainMenuMiddleware } from '../menus';
-import { QuestionCode } from '../enums/QuestionCode';
-import { ActionCode } from '../enums/ActionCode';
-import { RssParser } from '../parsers/RssParser';
+import { QuestionCode } from '../enums/question-code';
+import { RssParser } from '../parsers/rss-parser';
 import { Source } from '../entites';
-import { SourceType } from '../entites/Source';
+import { SourceType } from '../entites/source';
 import { subDays } from 'date-fns';
 
 const ADD_RSS_PATH = getMenuPath(ActionCode.MAIN_SOURCES, ActionCode.SOURCES_LIST);
+
+// https://github.com/sindresorhus/normalize-url#options
+const URL_NORMALIZER_PARAMS = {
+  stripWWW: false,
+  stripAuthentication: false,
+  removeTrailingSlash: false,
+};
 
 export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafContext>(
   QuestionCode.ADD_RSS,
@@ -19,17 +26,17 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
     const { text } = message;
 
     if (!text) {
-      await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssFailText'));
       await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
+      await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssFailText'));
       return;
     }
 
     try {
-      const urls = getUrls(text);
+      const urls = getUrls(text, URL_NORMALIZER_PARAMS);
 
       if (!urls.size) {
-        await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceUrl'));
         await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
+        await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceUrl'));
         return;
       }
 
@@ -40,8 +47,8 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
       const [, sourceName = ''] = text.match(/(\S+).+/);
 
       if (sourceName.length < 3 || sourceName.length > 32) {
-        await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceName', { sourceName }));
         await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
+        await ctx.reply(ctx.i18n.t('menus.sourcesList.invalidSourceName', { sourceName }));
         return;
       }
 
@@ -50,6 +57,7 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
       } catch (e) {
         logger.error(e.stack, { ctx });
 
+        await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
         await ctx.reply(
           ctx.i18n.t('menus.sourcesList.invalidSourceRecords', {
             url: firstSource,
@@ -58,7 +66,6 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
             disable_web_page_preview: true,
           } as any,
         );
-        await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
 
         return;
       }
@@ -76,12 +83,12 @@ export const addRssQuestion = new TelegrafStatelessQuestion<ExtendedTelegrafCont
       await ctx.connection.manager.save(newSource);
     } catch (e) {
       logger.error(e.stack, { ctx });
-      await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssFailText'));
       await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
+      await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssFailText'));
       return;
     }
 
-    await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssSuccessText'));
     await mainMenuMiddleware.replyToContext(ctx, ADD_RSS_PATH);
+    await ctx.reply(ctx.i18n.t('menus.sourcesList.addRssSuccessText'));
   },
 );

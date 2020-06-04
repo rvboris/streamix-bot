@@ -1,5 +1,5 @@
-import { logger } from '../util/logger';
-import { ActionCode } from '../enums/ActionCode';
+import { logger } from '../utils/logger';
+import { ActionCode } from '../enums/action-code';
 import { Source } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';

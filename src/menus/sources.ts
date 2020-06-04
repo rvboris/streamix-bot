@@ -1,8 +1,8 @@
-import { ActionCode } from '../enums/ActionCode';
+import { ActionCode } from '../enums/action-code';
 import { Channel, Settings, Source } from '../entites';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
-import { sourcesListMenu } from './sourcesList';
+import { sourcesListMenu } from './sources-list';
 
 export const sourcesMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   const menu = new MenuTemplate<ExtendedTelegrafContext>((ctx): string => ctx.i18n.t('menus.sources.title'));
@@ -52,12 +52,6 @@ export const sourcesMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   };
 
   menu.submenu(getListBtnText, ActionCode.SOURCES_LIST, sourcesListMenu());
-
-  menu.interact((ctx): string => ctx.i18n.t('menus.main.howToAddChannelBtn'), ActionCode.MAIN_ADD_CHANNEL, {
-    do: async (ctx): Promise<void> => {
-      await ctx.reply(ctx.i18n.t('menus.main.howToAddChannelText'));
-    },
-  });
 
   menu.manualRow(
     createBackMainMenuButtons<ExtendedTelegrafContext>(

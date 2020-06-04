@@ -1,5 +1,5 @@
-import { Sender } from './Sender';
-import { SourceRecord } from '../parsers/SourceRecord';
+import { Sender } from './sender';
+import { SourceRecord } from '../types/source-record';
 
 export class SimpleSender extends Sender {
   protected _formatRecords(records: SourceRecord[]): string[] {

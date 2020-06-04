@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, ObjectType } from 'typeorm';
-import { User } from './User';
-import { Bot } from './Bot';
-import { Channel } from './Channel';
+import { User } from './user';
+import { Bot } from './bot';
+import { Channel } from './channel';
 
 @Entity()
 export class Settings {

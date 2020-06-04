@@ -10,9 +10,9 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Bot } from './Bot';
-import { Source } from './Source';
-import { User } from './User';
+import { Bot } from './bot';
+import { Source } from './source';
+import { User } from './user';
 
 @Entity()
 export class Channel {

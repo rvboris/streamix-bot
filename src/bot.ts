@@ -4,12 +4,13 @@ import { botHandler, catchHandler, channelHandler } from './handlers';
 import { config } from 'dotenv-safe';
 import { dbConnection, i18n, unknownCallback, userInfo, callbackLogger } from './middlewares';
 import { ExtendedTelegrafContext } from './types/extended-telegraf-context';
-import { getConnection } from './util/getConnection';
+import { getConnection } from './utils/get-connection';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { mainMenuMiddleware } from './menus';
 import { Telegraf } from 'telegraf';
-import { UpdateWorker } from './worker/UpdateWorker';
-import { logger } from './util';
+import { UpdateWorker } from './worker/update-worker';
+import { logger, getMenuPath } from './utils';
+import { ActionCode } from './enums';
 
 config();
 
@@ -22,7 +23,7 @@ getConnection().then((connection): void => {
 
   const bot = new Telegraf<ExtendedTelegrafContext>(process.env.TELEGRAM_TOKEN, {
     telegram: {
-      agent: process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.env.HTTPS_PROXY) : undefined,
+      agent: process.env.TELEGRAM_HTTPS_PROXY ? new HttpsProxyAgent(process.env.TELEGRAM_HTTPS_PROXY) : undefined,
       webhookReply: !isProduction,
     },
   });
@@ -35,7 +36,12 @@ getConnection().then((connection): void => {
   bot.use(userInfo({ defaultLanguage }));
 
   bot.on('text', channelHandler(), botHandler());
-  bot.command('start', (ctx) => mainMenuMiddleware.replyToContext(ctx));
+
+  bot.start((ctx) => mainMenuMiddleware.replyToContext(ctx));
+  bot.help((ctx) => mainMenuMiddleware.replyToContext(ctx, getMenuPath(ActionCode.MAIN_HELP)));
+
+  bot.command('settings', (ctx) => mainMenuMiddleware.replyToContext(ctx, getMenuPath(ActionCode.MAIN_SETTINGS)));
+  bot.command('contact', (ctx) => contactQuestion.replyWithMarkdown(ctx, ctx.i18n.t('menus.main.contactQuestion')));
 
   bot.use(addRssQuestion.middleware());
   bot.use(contactQuestion.middleware());

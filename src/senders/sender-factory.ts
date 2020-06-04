@@ -1,5 +1,5 @@
-import { Sender } from './Sender';
-import { SimpleSender } from './SimpleSender';
+import { Sender } from './sender';
+import { SimpleSender } from './simple-sender';
 
 export class SenderFactory {
   private static _senderMap = new Map<string, Sender>([['simple', new SimpleSender()]]);

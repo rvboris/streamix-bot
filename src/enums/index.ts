@@ -1,2 +1,2 @@
-export { ActionCode } from './ActionCode';
-export { QuestionCode } from './QuestionCode';
+export { ActionCode } from './action-code';
+export { QuestionCode } from './question-code';

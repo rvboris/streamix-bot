@@ -8,11 +8,11 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { User } from './User';
-import { ParserFactory } from '../parsers/ParserFactory';
-import { SourceRecord } from '../parsers/SourceRecord';
-import { Channel } from './Channel';
-import { Update } from './Update';
+import { User } from './user';
+import { ParserFactory } from '../parsers/parser-factory';
+import { SourceRecord } from '../types/source-record';
+import { Channel } from './channel';
+import { Update } from './update';
 
 export enum SourceType {
   RSS = 1,

@@ -1,10 +1,10 @@
 import { sourceMenu } from './source';
-import { ActionCode } from '../enums/ActionCode';
+import { ActionCode } from '../enums/action-code';
 import { addRssQuestion } from '../questions/add-rss';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { MenuTemplate, createBackMainMenuButtons } from 'telegraf-inline-menu';
 import { Settings, Source } from '../entites';
-import { SourceType } from '../entites/Source';
+import { SourceType } from '../entites/source';
 
 export const sourcesListMenu = (): MenuTemplate<ExtendedTelegrafContext> => {
   const getMenuTitle = async (ctx: ExtendedTelegrafContext): Promise<string> => {

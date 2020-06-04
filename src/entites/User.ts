@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, ObjectType, OneToMany } from 'typeorm';
-import { Settings } from './Settings';
-import { Bot } from './Bot';
-import { Source } from './Source';
-import { Channel } from './Channel';
+import { Settings } from './settings';
+import { Bot } from './bot';
+import { Source } from './source';
+import { Channel } from './channel';
 
 export enum UserStatus {
   STARTED = 1,

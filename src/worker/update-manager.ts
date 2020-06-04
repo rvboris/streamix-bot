@@ -1,10 +1,10 @@
 import { Connection } from 'typeorm';
 import { createHash } from 'crypto';
 import { format, subDays } from 'date-fns';
-import { logger } from '../util/logger';
+import { logger } from '../utils/logger';
 import { Logger } from 'winston';
-import { SourceRecord } from '../parsers/SourceRecord';
-import { Update } from '../entites/Update';
+import { SourceRecord } from '../types/source-record';
+import { Update } from '../entites/update';
 
 export class UpdateManager {
   private readonly _connection: Connection;

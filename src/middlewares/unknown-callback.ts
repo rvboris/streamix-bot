@@ -1,4 +1,4 @@
-import { logger } from '../util/logger';
+import { logger } from '../utils/logger';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { Middleware } from 'telegraf';
 

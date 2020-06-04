@@ -1,7 +1,7 @@
 import { Middleware } from 'telegraf';
 import { ExtendedTelegrafContext } from '../types/extended-telegraf-context';
 import { User, Settings } from '../entites';
-import { UserStatus } from '../entites/User';
+import { UserStatus } from '../entites/user';
 
 export const userInfo = ({
   defaultLanguage,
