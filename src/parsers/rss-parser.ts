@@ -2,7 +2,6 @@ import axios from 'axios';
 import pickup from 'pickup';
 import { decodeStream } from 'iconv-lite';
 import { getCharset } from '../utils/get-charset';
-import { parseISO } from 'date-fns';
 import { Parser } from './parser';
 import { RssFeedItem } from '../types/rss-feed-item';
 import { Source } from '../entites';
@@ -18,12 +17,15 @@ export class RssParser implements Parser {
 
     return items.map(
       (record): SourceRecord => {
+        const date = new Date(record.updated);
+        const isValidDate = !isNaN(date.getTime());
+
         return {
           uuid: record.id,
           title: record.title,
           dataId: record.link,
           content: record.summary,
-          date: parseISO(record.updated),
+          date: isValidDate ? date : undefined,
           source,
         };
       },
