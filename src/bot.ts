@@ -12,7 +12,9 @@ import { UpdateWorker } from './worker/update-worker';
 import { logger, getMenuPath } from './utils';
 import { ActionCode } from './enums';
 
-config();
+config({
+  allowEmptyValues: true,
+});
 
 getConnection().then((connection): void => {
   const isProduction = process.env.NODE_ENV === 'production';
