@@ -18,7 +18,7 @@
   "author": "Boris Ryabov",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "date-fns": "^2.14.0",
     "dotenv-safe": "^8.2.0",
     "get-urls": "^9.2.0",
